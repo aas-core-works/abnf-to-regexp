@@ -2,11 +2,11 @@
 abnf-to-regexp
 **************
 
-.. image:: https://github.com/aas-core-works/abnf-to-regexp/workflows/Test-on-push-to-main/badge.svg
-    :target: https://github.com/aas-core-works/abnf-to-regexp/actions?query=workflow%3ACheck-on-push-to-main
+.. image:: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/check-on-push-to-main.yml/badge.svg
+    :target: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/check-on-push-to-main.yml
     :alt: Check on push to main
 
-.. image:: https://coveralls.io/repos/github/aas-core-works/abnf-to-regexp/badge.svg?branch=master
+.. image:: https://coveralls.io/repos/github/aas-core-works/abnf-to-regexp/badge.svg?branch=main
     :target: https://coveralls.io/github/aas-core-works/abnf-to-regexp?branch=main
     :alt: Test coverage
 
