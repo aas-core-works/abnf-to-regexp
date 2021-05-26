@@ -1,3 +1,6 @@
+# Python 3.6 specific
+venv36/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

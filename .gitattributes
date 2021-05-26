@@ -1,0 +1,2 @@
+# ABNF files require CRLF line endings in order to be parseable!
+*.abnf -crlf
