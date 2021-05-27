@@ -39,6 +39,7 @@ For example, the alternations of character classes are taken together to form a 
 .. code-block::
 
     usage: abnf-to-regexp [-h] -i INPUT [-o OUTPUT]
+                          [--format {single-regexp,python-nested}]
 
     Convert ABNF grammars to Python regular expressions.
 
@@ -49,6 +50,9 @@ For example, the alternations of character classes are taken together to form a 
       -o OUTPUT, --output OUTPUT
                             path to the file where regular expression is stored;
                             if not specified, writes to STDOUT
+      --format {single-regexp,python-nested}
+                            Output format; for example a single regular expression
+                            or a code snippet
 
 .. Help ends: abnf-to-regexp --help
 

@@ -1,10 +1,9 @@
 import io
-import itertools
 import os
 import pathlib
 import re
 import unittest
-from typing import List, Optional
+from typing import Optional
 
 import abnf_to_regexp.main
 
@@ -39,14 +38,13 @@ def represent_diff(expected_text: str, got_text: str) -> Optional[str]:
 
         result.write("\n")
 
-
     return result.getvalue()
 
 
 class TestAgainstRecordings(unittest.TestCase):
-    def test_against_files(self) -> None:
+    def test_single_regexp(self) -> None:
         this_dir = pathlib.Path(os.path.realpath(__file__)).parent
-        data_dir = this_dir / "data"
+        data_dir = this_dir / "data" / "single-regexp"
 
         for case_dir in sorted(data_dir.iterdir()):
             if not case_dir.is_dir():
@@ -58,8 +56,11 @@ class TestAgainstRecordings(unittest.TestCase):
             stderr = io.StringIO()
 
             abnf_to_regexp.main.run(
-                input_path=grammar_pth,
-                output_path=None,
+                params=abnf_to_regexp.main.Params(
+                    input_path=grammar_pth,
+                    output_path=None,
+                    fmt=abnf_to_regexp.main.Format.SINGLE_REGEXP
+                ),
                 stdout=stdout,
                 stderr=stderr
             )
@@ -123,6 +124,65 @@ class TestAgainstRecordings(unittest.TestCase):
                         f"Expected the counter-example not to match "
                         f"for {grammar_pth}: {counter_example_pth}")
 
+    def test_python_nested(self) -> None:
+        this_dir = pathlib.Path(os.path.realpath(__file__)).parent
+        data_dir = this_dir / "data" / "nested-python"
+
+        for case_dir in sorted(data_dir.iterdir()):
+            if not case_dir.is_dir():
+                continue
+
+            grammar_pth = case_dir / "grammar.abnf"
+
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+
+            abnf_to_regexp.main.run(
+                params=abnf_to_regexp.main.Params(
+                    input_path=grammar_pth,
+                    output_path=None,
+                    fmt=abnf_to_regexp.main.Format.PYTHON_NESTED
+                ),
+                stdout=stdout,
+                stderr=stderr
+            )
+
+            expected_err_pth = case_dir / "expected.err"
+            expected_out_pth = case_dir / "expected.py"
+
+            # Set to True if you are debugging or updating the tests
+            record = True
+
+            if record:
+                expected_err_pth.write_text(stderr.getvalue(), encoding='utf-8')
+                expected_out_pth.write_text(stdout.getvalue(), encoding='utf-8')
+
+            expected_err = expected_err_pth.read_text(encoding='utf-8')
+            expected_out = expected_out_pth.read_text(encoding='utf-8')
+
+            diff = represent_diff(expected_err, stderr.getvalue())
+            if diff:
+                raise AssertionError(
+                    f"Expected and obtained STDERR differ on {case_dir}. "
+                    f"Expected error:\n{expected_err!r}\n\n"
+                    f"Got error:\n{stderr.getvalue()!r}\n\n"
+                    f"The diff was:\n{diff}")
+
+            diff = represent_diff(expected_out, stdout.getvalue())
+            if diff:
+                raise AssertionError(
+                    f"Expected and obtained STDOUT differ on {case_dir}. "
+                    f"The diff was:\n{diff}")
+
+            if not stderr.getvalue():
+                code = stdout.getvalue().strip()
+                try:
+                    compile(code, "<abnf-to-regexp-test>", mode='exec')
+                except Exception as err:
+                    raise AssertionError(
+                        f"Failed to compile code as in {expected_out_pth}:\n"
+                        f"{code}"
+                    )
 
 if __name__ == "__main__":
     unittest.main()
