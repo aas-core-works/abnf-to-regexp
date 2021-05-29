@@ -471,7 +471,7 @@ def represent(table: "collections.OrderedDict[str, Element]") -> str:
 
             for line_i, line in enumerate(lines_of_segments):
                 if line_i > 0:
-                    writer.write(" +\n")
+                    writer.write("\n")
 
                 writer.write(" " * 4)
 
