@@ -151,7 +151,7 @@ class TestAgainstRecordings(unittest.TestCase):
             expected_out_pth = case_dir / "expected.py"
 
             # Set to True if you are debugging or updating the tests
-            record = True
+            record = False
 
             if record:
                 expected_err_pth.write_text(stderr.getvalue(), encoding='utf-8')

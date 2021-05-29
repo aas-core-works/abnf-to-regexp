@@ -37,31 +37,44 @@ class _MergeAlternationsOfCharacterClasses(Transformer):
             self.transform(subelement) for subelement in element.elements
         ]
 
-        can_merge = True
+        new_subelements = []  # type: List[Element]
+
+        accumulator = []  # type: List[Union[Range, Literal]]
         for subelement in transformed_subelements:
-            if not isinstance(subelement, (Literal, Range, CharacterClass)):
-                can_merge = False
-                break
+            if (
+                isinstance(subelement, Literal) and len(subelement.value) > 1
+            ) or not isinstance(subelement, (Literal, Range, CharacterClass)):
+                if len(accumulator) > 0:
+                    if len(accumulator) > 1:
+                        new_subelements.append(CharacterClass(elements=accumulator))
+                    else:
+                        new_subelements.append(accumulator[0])
 
-            if isinstance(subelement, Literal) and len(subelement.value) > 1:
-                can_merge = False
-                break
+                    accumulator = []
 
-        if not can_merge:
-            return Alternation(elements=transformed_subelements)
+                new_subelements.append(subelement)
 
-        merged = []  # type: List[Union[Range, Literal]]
-        for subelement in transformed_subelements:
-            if isinstance(subelement, CharacterClass):
-                merged.extend(subelement.elements)
-            elif isinstance(subelement, Literal):
-                merged.append(subelement)
-            elif isinstance(subelement, Range):
-                merged.append(subelement)
             else:
-                raise AssertionError(str(subelement))
+                if isinstance(subelement, Literal):
+                    assert len(subelement.value) == 1
+                    accumulator.append(subelement)
+                elif isinstance(subelement, Range):
+                    accumulator.append(subelement)
+                elif isinstance(subelement, CharacterClass):
+                    accumulator.extend(subelement.elements)
+                else:
+                    raise AssertionError(subelement)
 
-        return CharacterClass(elements=merged)
+        if len(accumulator) > 0:
+            if len(accumulator) > 1:
+                new_subelements.append(CharacterClass(elements=accumulator))
+            else:
+                new_subelements.append(accumulator[0])
+
+        if len(new_subelements) == 1:
+            return new_subelements[0]
+
+        return Alternation(elements=new_subelements)
 
 
 def compress(element: Element) -> Element:
