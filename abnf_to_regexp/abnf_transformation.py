@@ -86,6 +86,8 @@ class Transformer(abc.ABC, Generic[T]):
 class TransformerToElement(Transformer[Element], abc.ABC):
     """Transform an ABNF to a regular expression."""
 
+    # pylint: disable=missing-docstring,no-self-use
+
     def transform_option(self, option: abnf.parser.Option) -> Element:
         return Repetition(
             element=self.transform_parser(parser=option.alternation),

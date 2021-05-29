@@ -2,7 +2,6 @@
 import collections
 import enum
 import io
-import typing
 from typing import (
     Mapping,
     Type,
@@ -75,7 +74,7 @@ class _RenameRules(Transformer):
 @ensure(lambda result: all(name.isidentifier() for name in result))
 def _rename_rules_to_variable_identifiers(
     table: Mapping[str, Element]
-) -> typing.OrderedDict[str, Element]:
+) -> "collections.OrderedDict[str, Element]":
     """Rename all rules and the references to make them valid variable identifiers."""
     mapping = dict()  # type: MutableMapping[str, str]
     for name in table:
@@ -89,7 +88,7 @@ def _rename_rules_to_variable_identifiers(
 
     transformer = _RenameRules(mapping=mapping)
 
-    new_table = collections.OrderedDict()  # type: typing.OrderedDict[str, Element]
+    new_table = collections.OrderedDict()  # type: collections.OrderedDict[str, Element]
     for name, element in table.items():
         new_table[mapping[name]] = transformer.transform(element)
 
@@ -107,8 +106,8 @@ class _ReferenceVisitor(Visitor):
 
 
 def _reorder_table_by_dependencies(
-    table: typing.OrderedDict[str, Element]
-) -> typing.OrderedDict[str, Element]:
+    table: "collections.OrderedDict[str, Element]",
+) -> "collections.OrderedDict[str, Element]":
     """Order the table so that the rules are defined after their dependencies."""
     # Figure out the dependency graph
     graph = dict()  # type: MutableMapping[str, List[str]]
@@ -150,16 +149,16 @@ def _reorder_table_by_dependencies(
     trace = sorted(evaluation_order.items(), key=lambda item: item[1])
 
     # Change the order
-    new_table = collections.OrderedDict()  # type: typing.OrderedDict[str, Element]
+    new_table = collections.OrderedDict()  # type: collections.OrderedDict[str, Element]
     for identifier, _ in trace:
         new_table[identifier] = table[identifier]
 
     return new_table
 
 
-def translate(rule_cls: Type[abnf.Rule]) -> typing.OrderedDict[str, Element]:
+def translate(rule_cls: Type[abnf.Rule]) -> "collections.OrderedDict[str, Element]":
     """Translate the ABNF rule to a regular expression."""
-    table = collections.OrderedDict()  # type: typing.OrderedDict[str, Element]
+    table = collections.OrderedDict()  # type: collections.OrderedDict[str, Element]
 
     transformer = ABNFTransformer()
 
@@ -417,7 +416,7 @@ def _wrap_segments(segments: List[_Segment], line_width: int) -> List[List[_Segm
 @ensure(lambda result: not result.startswith('\n'))
 @ensure(lambda result: not result.endswith('\n'))
 # fmt: on
-def represent(table: typing.OrderedDict[str, Element]) -> str:
+def represent(table: "collections.OrderedDict[str, Element]") -> str:
     """Compile the rule table to a snippet of Python code."""
     writer = io.StringIO()
 

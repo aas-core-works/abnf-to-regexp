@@ -73,6 +73,8 @@ class _Representer(Convertor[str]):
     References are not expected in the input of this class.
     """
 
+    # pylint: disable=missing-docstring,no-self-use
+
     def convert_concatenation(self, element: Concatenation) -> str:
         return "".join(self.visit(part) for part in element.elements)
 
