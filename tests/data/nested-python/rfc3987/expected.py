@@ -18,12 +18,12 @@ gen_delims = '[:/?#\\[\\]@]'
 reserved = f'({gen_delims}|{sub_delims})'
 ipv4address = f'{dec_octet}\\.{dec_octet}\\.{dec_octet}\\.{dec_octet}'
 ipvfuture = f'(?i:v)([0-9A-Fa-f]){{1,}}\\.(({unreserved}|{sub_delims}|:)){{1,}}'
-iunreserved = f'([a-zA-Z]|[0-9]|\\-|\\.|_|\\~|{ucschar})'
+iunreserved = f'([a-zA-Z0-9\\-._~]|{ucschar})'
 ls32 = f'({h16}:{h16}|{ipv4address})'
 iuserinfo = f'(({iunreserved}|{pct_encoded}|{sub_delims}|:))*'
 ireg_name = f'(({iunreserved}|{pct_encoded}|{sub_delims}))*'
 isegment_nz_nc = f'(({iunreserved}|{pct_encoded}|{sub_delims}|@)){{1,}}'
-ipchar = f'({iunreserved}|{pct_encoded}|{sub_delims}|:|@)'
+ipchar = f'({iunreserved}|{pct_encoded}|{sub_delims}|[:@])'
 ipv6address = (
     f'(({h16}:){{6,6}}{ls32}|::({h16}:){{5,5}}{ls32}|({h16})?::({h16}' +
     f':){{4,4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3,3}}{ls32}|(({h16}' +
@@ -31,8 +31,8 @@ ipv6address = (
     f'{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|' +
     f'(({h16}:){{6}}{h16})?::)'
 )
-iquery = f'(({ipchar}|{iprivate}|/|\\?))*'
-ifragment = f'(({ipchar}|/|\\?))*'
+iquery = f'(({ipchar}|{iprivate}|[/?]))*'
+ifragment = f'(({ipchar}|[/?]))*'
 ipath_empty = f'({ipchar}){{0,0}}'
 isegment = f'({ipchar})*'
 isegment_nz = f'({ipchar}){{1,}}'
