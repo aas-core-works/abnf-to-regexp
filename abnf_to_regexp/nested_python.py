@@ -245,44 +245,37 @@ class _Representer(Visitor):
 
     def visit_repetition(self, element: Repetition) -> None:
         if element.min_occurrences == 0 and element.max_occurrences is None:
-            self.stream.write_text("(")
-            self.visit(element.element)
-            self.stream.write_text(")*")
-            return
-
+            suffix = "*"
         elif element.min_occurrences == 0 and element.max_occurrences == 1:
-            self.stream.write_text("(")
-            self.visit(element.element)
-            self.stream.write_text(")?")
-            return
-
+            suffix = "?"
         elif (
             (element.min_occurrences is None or element.min_occurrences == 0)
             and element.max_occurrences is not None
             and element.max_occurrences > 0
         ):
-            self.stream.write_text("(")
-            self.visit(element.element)
-            self.stream.write_text(f"){{{element.max_occurrences}}}")
-            return
-
+            suffix = f"{{{element.max_occurrences}}}"
         elif (
             element.min_occurrences is not None
             and element.min_occurrences > 0
             and element.max_occurrences is None
         ):
-            self.stream.write_text("(")
-            self.visit(element.element)
-            self.stream.write_text(f"){{{element.min_occurrences},}}")
-            return
-
+            suffix = f"{{{element.min_occurrences},}}"
         else:
+            suffix = f"{{{element.min_occurrences},{element.max_occurrences}}}"
+
+        needs_parentheses = not isinstance(
+            element.element, (Alternation, Range, CharacterClass)
+        )
+
+        if needs_parentheses:
             self.stream.write_text("(")
-            self.visit(element.element)
-            self.stream.write_text(
-                f"){{{element.min_occurrences},{element.max_occurrences}}}"
-            )
-            return
+
+        self.visit(element.element)
+
+        if needs_parentheses:
+            self.stream.write_text(f"){suffix}")
+        else:
+            self.stream.write_text(suffix)
 
     def visit_case_insensitivity(self, element: CaseInsensitivity) -> None:
         self.stream.write_text("(?i:")
