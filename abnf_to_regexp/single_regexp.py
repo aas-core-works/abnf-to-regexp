@@ -83,26 +83,35 @@ class _Representer(Convertor[str]):
 
     def convert_repetition(self, element: Repetition) -> str:
         if element.min_occurrences == 0 and element.max_occurrences is None:
-            return f"({self.visit(element.element)})*"
+            suffix = "*"
         elif element.min_occurrences == 0 and element.max_occurrences == 1:
-            return f"({self.visit(element.element)})?"
+            suffix = "?"
         elif (
             (element.min_occurrences is None or element.min_occurrences == 0)
             and element.max_occurrences is not None
             and element.max_occurrences > 0
         ):
-            return f"({self.visit(element.element)}){{{element.max_occurrences}}}"
+            suffix = f"{{{element.max_occurrences}}}"
         elif (
             element.min_occurrences is not None
             and element.min_occurrences > 0
             and element.max_occurrences is None
         ):
-            return f"({self.visit(element.element)}){{{element.min_occurrences},}}"
+            suffix = f"{{{element.min_occurrences},}}"
         else:
-            return (
-                f"({self.visit(element.element)})"
-                + f"{{{element.min_occurrences},{element.max_occurrences}}}"
-            )
+            suffix = f"{{{element.min_occurrences},{element.max_occurrences}}}"
+
+        needs_parentheses = not isinstance(
+            element.element, (Alternation, Range, CharacterClass)
+        )
+
+        result = (
+            f"{self.visit(element.element)}{suffix}"
+            if not needs_parentheses
+            else f"({self.visit(element.element)}){suffix}"
+        )
+
+        return result
 
     def convert_case_insensitivity(self, element: CaseInsensitivity) -> str:
         return f"(?i:{self.visit(element.element)})"

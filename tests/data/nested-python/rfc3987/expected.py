@@ -1,5 +1,5 @@
-scheme = '[a-zA-Z]([a-zA-Z0-9+\\-.])*'
-port = '([0-9])*'
+scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
+port = '[0-9]*'
 pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
 sub_delims = "[!$&'()*+,;=]"
 iprivate = '[\\ue000-\\uf8ff\\uf0000-\\uffffd\\u100000-\\u10fffd]'
@@ -12,17 +12,17 @@ ucschar = (
     '\\ue1000-\\uefffd]'
 )
 unreserved = '[a-zA-Z0-9\\-._~]'
-h16 = '([0-9A-Fa-f]){1,4}'
-dec_octet = '([0-9]|[1-9][0-9]|1([0-9]){2,2}|2[0-4][0-9]|25[0-5])'
+h16 = '[0-9A-Fa-f]{1,4}'
+dec_octet = '([0-9]|[1-9][0-9]|1[0-9]{2,2}|2[0-4][0-9]|25[0-5])'
 gen_delims = '[:/?#\\[\\]@]'
 reserved = f'({gen_delims}|{sub_delims})'
 ipv4address = f'{dec_octet}\\.{dec_octet}\\.{dec_octet}\\.{dec_octet}'
-ipvfuture = f'(?i:v)([0-9A-Fa-f]){{1,}}\\.(({unreserved}|{sub_delims}|:)){{1,}}'
+ipvfuture = f'(?i:v)[0-9A-Fa-f]{{1,}}\\.({unreserved}|{sub_delims}|:){{1,}}'
 iunreserved = f'([a-zA-Z0-9\\-._~]|{ucschar})'
 ls32 = f'({h16}:{h16}|{ipv4address})'
-iuserinfo = f'(({iunreserved}|{pct_encoded}|{sub_delims}|:))*'
-ireg_name = f'(({iunreserved}|{pct_encoded}|{sub_delims}))*'
-isegment_nz_nc = f'(({iunreserved}|{pct_encoded}|{sub_delims}|@)){{1,}}'
+iuserinfo = f'({iunreserved}|{pct_encoded}|{sub_delims}|:)*'
+ireg_name = f'({iunreserved}|{pct_encoded}|{sub_delims})*'
+isegment_nz_nc = f'({iunreserved}|{pct_encoded}|{sub_delims}|@){{1,}}'
 ipchar = f'({iunreserved}|{pct_encoded}|{sub_delims}|[:@])'
 ipv6address = (
     f'(({h16}:){{6,6}}{ls32}|::({h16}:){{5,5}}{ls32}|({h16})?::({h16}' +
@@ -31,8 +31,8 @@ ipv6address = (
     f'{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|' +
     f'(({h16}:){{6}}{h16})?::)'
 )
-iquery = f'(({ipchar}|{iprivate}|[/?]))*'
-ifragment = f'(({ipchar}|[/?]))*'
+iquery = f'({ipchar}|{iprivate}|[/?])*'
+ifragment = f'({ipchar}|[/?])*'
 ipath_empty = f'({ipchar}){{0,0}}'
 isegment = f'({ipchar})*'
 isegment_nz = f'({ipchar}){{1,}}'
