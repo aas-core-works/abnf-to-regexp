@@ -84,8 +84,10 @@ class _SingleLetterCaseInsensitiveToRange(Transformer):
     def transform_case_insensitivity(self, element: CaseInsensitivity) -> Element:
         transformed_subelement = self.transform(element.element)
 
-        if isinstance(transformed_subelement, Literal) and re.match(
-            r"\p{L}", transformed_subelement.value
+        if (
+            isinstance(transformed_subelement, Literal)
+            and len(transformed_subelement.value) == 1
+            and re.match(r"\p{L}", transformed_subelement.value)
         ):
             return CharacterClass(
                 elements=[

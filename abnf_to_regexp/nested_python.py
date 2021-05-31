@@ -8,6 +8,8 @@ from typing import (
     MutableMapping,
     List,
     Sequence,
+    Optional,
+    Tuple,
 )
 
 import abnf
@@ -31,29 +33,39 @@ from abnf_to_regexp.base import (
 )
 from abnf_to_regexp.representation import escape_for_character_class
 
+# Short-circuit the rules from RFC 5234 to regular expressions
+_RFC_5234 = {
+    "CR": Literal("\x0D"),
+    "LF": Literal("\x0A"),
+    "CRLF": Literal("\x0D\x0A"),
+    "HTAB": Literal("\x09"),
+    "DQUOTE": Literal('"'),
+    "SP": Literal(" "),
+    "WSP": CharacterClass([Literal(" "), Literal("\x09")]),
+    "VCHAR": Range(start="\x21", end="\x7E"),
+    "ALPHA": CharacterClass(
+        elements=[Range(start="a", end="z"), Range(start="A", end="Z")]
+    ),
+    "DIGIT": Range(start="0", end="9"),
+    "HEXDIG": CharacterClass(
+        elements=[
+            Range(start="0", end="9"),
+            Range(start="A", end="F"),
+            Range(start="a", end="f"),
+        ]
+    ),
+    "BIT": CharacterClass(elements=[Literal(value="0"), Literal(value="1")]),
+}
+
 
 class ABNFTransformer(abnf_to_regexp.abnf_transformation.TransformerToElement):
     """Translate ABNF rule to a regular expressions including references."""
 
     def transform_rule(self, rule: abnf.Rule) -> Element:
-        if rule.name == "ALPHA":
-            return CharacterClass(
-                elements=[Range(start="a", end="z"), Range(start="A", end="Z")]
-            )
-        elif rule.name == "DIGIT":
-            return Range(start="0", end="9")
-        elif rule.name == "HEXDIG":
-            return CharacterClass(
-                elements=[
-                    Range(start="0", end="9"),
-                    Range(start="A", end="F"),
-                    Range(start="a", end="f"),
-                ]
-            )
-        elif rule.name == "BIT":
-            return CharacterClass(elements=[Literal(value="0"), Literal(value="1")])
-        elif rule.name == "DQUOTE":
-            return Literal(value='"')
+        # Short-circuit the rules from RFC 5234
+        short_circuited = _RFC_5234.get(rule.name, None)
+        if short_circuited is not None:
+            return short_circuited
         else:
             return Reference(name=rule.name)
 
@@ -71,11 +83,15 @@ class _RenameRules(Transformer):
         return Reference(name=self.mapping[element.name])
 
 
-@ensure(lambda result: all(name.isidentifier() for name in result))
+@ensure(lambda result: all(name.isidentifier() for name in result[0]))
 def _rename_rules_to_variable_identifiers(
     table: Mapping[str, Element]
-) -> "collections.OrderedDict[str, Element]":
-    """Rename all rules and the references to make them valid variable identifiers."""
+) -> Tuple["collections.OrderedDict[str, Element]", Mapping[str, str]]:
+    """
+    Rename all rules and the references to make them valid variable identifiers.
+
+    Return (table with renamed rules, mapping original name -> valid identifier).
+    """
     mapping = dict()  # type: MutableMapping[str, str]
     for name in table:
         proposed_name = re.sub("[^a-zA-Z_0-9]", "_", name).lower()
@@ -92,7 +108,7 @@ def _rename_rules_to_variable_identifiers(
     for name, element in table.items():
         new_table[mapping[name]] = transformer.transform(element)
 
-    return new_table
+    return new_table, mapping
 
 
 class _ReferenceVisitor(Visitor):
@@ -105,10 +121,64 @@ class _ReferenceVisitor(Visitor):
         self.references.append(element.name)
 
 
+@ensure(lambda result: (result[0] is None) ^ (result[1] is None))
+def _topological_sort(
+    graph: Mapping[str, List[str]]
+) -> Tuple[Optional[List[str]], Optional[str]]:
+    """
+    Figure out the dependency graph using the topological sort.
+
+    Return None if there is a cycle.
+    """
+    # See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first%20search
+    trace = []  # type: List[str]
+    identifiers_without_permanent_marks = set(graph.keys())
+    permanent_marks = set()  # Set[str]
+    temporary_marks = set()  # Set[str]
+
+    visited_more_than_once = None  # type: Optional[str]
+
+    def visit(an_identifier: str) -> None:
+        nonlocal visited_more_than_once
+        nonlocal trace
+
+        if visited_more_than_once:
+            return
+
+        if an_identifier in permanent_marks:
+            return
+
+        if an_identifier in temporary_marks:
+            visited_more_than_once = an_identifier
+            return
+
+        temporary_marks.add(an_identifier)
+
+        for reference in graph[an_identifier]:
+            visit(reference)
+
+        temporary_marks.remove(an_identifier)
+        permanent_marks.add(an_identifier)
+        identifiers_without_permanent_marks.remove(an_identifier)
+        trace.insert(0, an_identifier)
+
+    while len(identifiers_without_permanent_marks) > 0 and not visited_more_than_once:
+        visit(next(iter(identifiers_without_permanent_marks)))
+
+    if visited_more_than_once:
+        return None, visited_more_than_once
+
+    return trace, None
+
+
 def _reorder_table_by_dependencies(
     table: "collections.OrderedDict[str, Element]",
-) -> "collections.OrderedDict[str, Element]":
-    """Order the table so that the rules are defined after their dependencies."""
+) -> Tuple[Optional["collections.OrderedDict[str, Element]"], Optional[str]]:
+    """
+    Order the table so that the rules are defined after their dependencies.
+
+    Return (re-ordered table, identifier where a cycle has been observed)
+    """
     # Figure out the dependency graph
     graph = dict()  # type: MutableMapping[str, List[str]]
     for identifier, regexp in table.items():
@@ -117,46 +187,24 @@ def _reorder_table_by_dependencies(
 
         graph[identifier] = visitor.references
 
-    # Collect back references
-    back_graph = collections.defaultdict(
-        lambda: []
-    )  # type: MutableMapping[str, List[str]]
-    for identifier, references in graph.items():
-        for reference in references:
-            back_graph[reference].append(identifier)
+    trace, duplicate_visit = _topological_sort(graph=graph)
+    if duplicate_visit is not None:
+        return None, duplicate_visit
 
-    evaluation_order = collections.defaultdict(
-        lambda: 0
-    )  # type: MutableMapping[str, int]
-
-    stack = []  # type: List[str]
-    for identifier, references in graph.items():
-        if len(references) == 0:
-            evaluation_order[identifier] = 0
-            stack.append(identifier)
-
-    while len(stack) > 0:
-        identifier = stack.pop()
-        current_order = evaluation_order[identifier]
-
-        for back_reference in back_graph[identifier]:
-            evaluation_order[back_reference] = max(
-                current_order + 1, evaluation_order[back_reference]
-            )
-            stack.append(back_reference)
-
-    # Trace the order
-    trace = sorted(evaluation_order.items(), key=lambda item: item[1])
+    assert trace is not None
 
     # Change the order
     new_table = collections.OrderedDict()  # type: collections.OrderedDict[str, Element]
-    for identifier, _ in trace:
+    for identifier in reversed(trace):
         new_table[identifier] = table[identifier]
 
-    return new_table
+    return new_table, None
 
 
-def translate(rule_cls: Type[abnf.Rule]) -> "collections.OrderedDict[str, Element]":
+@ensure(lambda result: (result[0] is None) ^ (result[1] is None))
+def translate(
+    rule_cls: Type[abnf.Rule],
+) -> Tuple[Optional["collections.OrderedDict[str, Element]"], Optional[str]]:
     """Translate the ABNF rule to a regular expression."""
     table = collections.OrderedDict()  # type: collections.OrderedDict[str, Element]
 
@@ -167,10 +215,19 @@ def translate(rule_cls: Type[abnf.Rule]) -> "collections.OrderedDict[str, Elemen
             transformer.transform_parser(rule.definition)
         )
 
-    table = _rename_rules_to_variable_identifiers(table=table)
-    table = _reorder_table_by_dependencies(table=table)
+    table, name_mapping = _rename_rules_to_variable_identifiers(table=table)
 
-    return table
+    reordered_table, duplicate_visit = _reorder_table_by_dependencies(table=table)
+    if duplicate_visit:
+        return (
+            None,
+            f"You have a cycle in your ABNF. "
+            f"The rule has been visited "
+            f"more than once: {name_mapping[duplicate_visit]}",
+        )
+    assert reordered_table is not None
+
+    return reordered_table, None
 
 
 class _TokenKind(enum.Enum):

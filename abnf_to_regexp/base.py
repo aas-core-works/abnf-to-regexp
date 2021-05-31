@@ -55,6 +55,9 @@ class Literal(Element):
         """Initialize with the given values."""
         self.value = value
 
+    def __repr__(self) -> str:
+        return f"Literal({self.value!r})"
+
 
 class Range(Element):
     """Represent a range match in the regular expression."""

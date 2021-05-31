@@ -81,14 +81,24 @@ def run(
         stderr.write(f"Failed to interpret the grammar: {err}")
         return 1
 
+    for rule in RuleFromFile.rules():
+        if not hasattr(rule, "definition"):
+            stderr.write(f"Unexpected rule without a definition: {rule.name!r}")
+            return 1
+
     if params.fmt == Format.SINGLE_REGEXP:
         regexp = abnf_to_regexp.single_regexp.translate(rule_cls=RuleFromFile)
         representation = abnf_to_regexp.single_regexp.represent(regexp)
 
     elif params.fmt == Format.PYTHON_NESTED:
-        table = abnf_to_regexp.nested_python.translate(rule_cls=RuleFromFile)
-        representation = abnf_to_regexp.nested_python.represent(table=table)
+        table, error = abnf_to_regexp.nested_python.translate(rule_cls=RuleFromFile)
+        if error:
+            stderr.write(error + "\n")
+            return 1
 
+        assert table is not None
+
+        representation = abnf_to_regexp.nested_python.represent(table=table)
     else:
         raise NotImplementedError(f"Unhandled format: {params.fmt}")
 

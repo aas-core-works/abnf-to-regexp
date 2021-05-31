@@ -1,8 +1,15 @@
-scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
-port = '[0-9]*'
-pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
-sub_delims = "[!$&'()*+,;=]"
-iprivate = '[\\ue000-\\uf8ff\\uf0000-\\uffffd\\u100000-\\u10fffd]'
+h16 = '[0-9A-Fa-f]{1,4}'
+dec_octet = '([0-9]|[1-9][0-9]|1[0-9]{2,2}|2[0-4][0-9]|25[0-5])'
+ipv4address = f'{dec_octet}\\.{dec_octet}\\.{dec_octet}\\.{dec_octet}'
+ls32 = f'({h16}:{h16}|{ipv4address})'
+ipv6address = (
+    f'(({h16}:){{6,6}}{ls32}|::({h16}:){{5,5}}{ls32}|({h16})?::({h16}'
+    f':){{4,4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3,3}}{ls32}|(({h16}'
+    f':){{2}}{h16})?::({h16}:){{2,2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:'
+    f'{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|'
+    f'(({h16}:){{6}}{h16})?::)'
+)
+gen_delims = '[:/?#\\[\\]@]'
 ucschar = (
     '[\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef\\u10000-\\u1fffd'
     '\\u20000-\\u2fffd\\u30000-\\u3fffd\\u40000-\\u4fffd'
@@ -11,51 +18,44 @@ ucschar = (
     '\\ub0000-\\ubfffd\\uc0000-\\ucfffd\\ud0000-\\udfffd'
     '\\ue1000-\\uefffd]'
 )
-unreserved = '[a-zA-Z0-9\\-._~]'
-h16 = '[0-9A-Fa-f]{1,4}'
-dec_octet = '([0-9]|[1-9][0-9]|1[0-9]{2,2}|2[0-4][0-9]|25[0-5])'
-gen_delims = '[:/?#\\[\\]@]'
-reserved = f'({gen_delims}|{sub_delims})'
-ipv4address = f'{dec_octet}\\.{dec_octet}\\.{dec_octet}\\.{dec_octet}'
-ipvfuture = f'[vV][0-9A-Fa-f]{{1,}}\\.({unreserved}|{sub_delims}|:){{1,}}'
 iunreserved = f'([a-zA-Z0-9\\-._~]|{ucschar})'
-ls32 = f'({h16}:{h16}|{ipv4address})'
-iuserinfo = f'({iunreserved}|{pct_encoded}|{sub_delims}|:)*'
-ireg_name = f'({iunreserved}|{pct_encoded}|{sub_delims})*'
-isegment_nz_nc = f'({iunreserved}|{pct_encoded}|{sub_delims}|@){{1,}}'
+pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
+sub_delims = "[!$&'()*+,;=]"
 ipchar = f'({iunreserved}|{pct_encoded}|{sub_delims}|[:@])'
-ipv6address = (
-    f'(({h16}:){{6,6}}{ls32}|::({h16}:){{5,5}}{ls32}|({h16})?::({h16}'
-    f':){{4,4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3,3}}{ls32}|(({h16}'
-    f':){{2}}{h16})?::({h16}:){{2,2}}{ls32}|(({h16}:){{3}}{h16})?::{h16}:'
-    f'{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|'
-    f'(({h16}:){{6}}{h16})?::)'
-)
-iquery = f'({ipchar}|{iprivate}|[/?])*'
-ifragment = f'({ipchar}|[/?])*'
 ipath_empty = f'({ipchar}){{0,0}}'
-isegment = f'({ipchar})*'
-isegment_nz = f'({ipchar}){{1,}}'
+iuserinfo = f'({iunreserved}|{pct_encoded}|{sub_delims}|:)*'
+unreserved = '[a-zA-Z0-9\\-._~]'
+ipvfuture = f'[vV][0-9A-Fa-f]{{1,}}\\.({unreserved}|{sub_delims}|:){{1,}}'
 ip_literal = f'\\[({ipv6address}|{ipvfuture})\\]'
-ipath_absolute = f'/({isegment_nz}(/{isegment})*)?'
-ipath_rootless = f'{isegment_nz}(/{isegment})*'
-ipath_abempty = f'(/{isegment})*'
-ipath_noscheme = f'{isegment_nz_nc}(/{isegment})*'
+ireg_name = f'({iunreserved}|{pct_encoded}|{sub_delims})*'
 ihost = f'({ip_literal}|{ipv4address}|{ireg_name})'
-ipath = (
-    f'({ipath_abempty}|{ipath_absolute}|{ipath_noscheme}|'
-    f'{ipath_rootless}|{ipath_empty})'
-)
+port = '[0-9]*'
 iauthority = f'({iuserinfo}@)?{ihost}(:{port})?'
-ihier_part = (
-    f'(//{iauthority}{ipath_abempty}|{ipath_absolute}|'
-    f'{ipath_rootless}|{ipath_empty})'
-)
+isegment = f'({ipchar})*'
+ipath_abempty = f'(/{isegment})*'
+isegment_nz = f'({ipchar}){{1,}}'
+ipath_absolute = f'/({isegment_nz}(/{isegment})*)?'
+isegment_nz_nc = f'({iunreserved}|{pct_encoded}|{sub_delims}|@){{1,}}'
+ipath_noscheme = f'{isegment_nz_nc}(/{isegment})*'
 irelative_part = (
     f'(//{iauthority}{ipath_abempty}|{ipath_absolute}|'
     f'{ipath_noscheme}|{ipath_empty})'
 )
+iprivate = '[\\ue000-\\uf8ff\\uf0000-\\uffffd\\u100000-\\u10fffd]'
+iquery = f'({ipchar}|{iprivate}|[/?])*'
+ifragment = f'({ipchar}|[/?])*'
 irelative_ref = f'{irelative_part}(\\?{iquery})?(\\#{ifragment})?'
-iri = f'{scheme}:{ihier_part}(\\?{iquery})?(\\#{ifragment})?'
+ipath_rootless = f'{isegment_nz}(/{isegment})*'
+ihier_part = (
+    f'(//{iauthority}{ipath_abempty}|{ipath_absolute}|'
+    f'{ipath_rootless}|{ipath_empty})'
+)
+scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
 absolute_iri = f'{scheme}:{ihier_part}(\\?{iquery})?'
+ipath = (
+    f'({ipath_abempty}|{ipath_absolute}|{ipath_noscheme}|'
+    f'{ipath_rootless}|{ipath_empty})'
+)
+iri = f'{scheme}:{ihier_part}(\\?{iquery})?(\\#{ifragment})?'
 iri_reference = f'({iri}|{irelative_ref})'
+reserved = f'({gen_delims}|{sub_delims})'
