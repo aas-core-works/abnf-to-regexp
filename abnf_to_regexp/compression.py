@@ -1,6 +1,8 @@
 """Compress regular expressions to an equivalent shorter form."""
 from typing import List, Union
 
+import regex as re
+
 from abnf_to_regexp.base import (
     Transformer,
     Alternation,
@@ -8,6 +10,7 @@ from abnf_to_regexp.base import (
     Literal,
     Range,
     CharacterClass,
+    CaseInsensitivity,
 )
 
 
@@ -77,9 +80,27 @@ class _MergeAlternationsOfCharacterClasses(Transformer):
         return Alternation(elements=new_subelements)
 
 
+class _SingleLetterCaseInsensitiveToRange(Transformer):
+    def transform_case_insensitivity(self, element: CaseInsensitivity) -> Element:
+        transformed_subelement = self.transform(element.element)
+
+        if isinstance(transformed_subelement, Literal) and re.match(
+            r"\p{L}", transformed_subelement.value
+        ):
+            return CharacterClass(
+                elements=[
+                    Literal(transformed_subelement.value.lower()),
+                    Literal(transformed_subelement.value.upper()),
+                ]
+            )
+
+        return transformed_subelement
+
+
 def compress(element: Element) -> Element:
     """Apply multiple compressions to the element to obtain a more readable regexp."""
     element = _MergeAlternationsOfCharacterClasses().transform(element)
     element = _MergeAlternations().transform(element)
+    element = _SingleLetterCaseInsensitiveToRange().transform(element)
 
     return element

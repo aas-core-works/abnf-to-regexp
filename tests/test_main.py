@@ -44,7 +44,7 @@ def represent_diff(expected_text: str, got_text: str) -> Optional[str]:
 class TestAgainstRecordings(unittest.TestCase):
     def test_single_regexp(self) -> None:
         this_dir = pathlib.Path(os.path.realpath(__file__)).parent
-        data_dir = this_dir / "data" / "single-regexp"
+        data_dir = this_dir.parent / "test_data" / "single-regexp"
 
         for case_dir in sorted(data_dir.iterdir()):
             if not case_dir.is_dir():
@@ -126,7 +126,7 @@ class TestAgainstRecordings(unittest.TestCase):
 
     def test_python_nested(self) -> None:
         this_dir = pathlib.Path(os.path.realpath(__file__)).parent
-        data_dir = this_dir / "data" / "nested-python"
+        data_dir = this_dir.parent / "test_data" / "nested-python"
 
         for case_dir in sorted(data_dir.iterdir()):
             if not case_dir.is_dir():
