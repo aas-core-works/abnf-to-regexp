@@ -1,24 +1,7 @@
-scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
-port = '[0-9]*'
-unreserved = '[a-zA-Z0-9\\-._~]'
-pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
-sub_delims = "[!$&'()*+,;=]"
 h16 = '[0-9A-Fa-f]{1,4}'
 dec_octet = '([0-9]|[1-9][0-9]|1[0-9]{2,2}|2[0-4][0-9]|25[0-5])'
-gen_delims = '[:/?#\\[\\]@]'
-reserved = f'({gen_delims}|{sub_delims})'
 ipv4address = f'{dec_octet}\\.{dec_octet}\\.{dec_octet}\\.{dec_octet}'
-userinfo = f'({unreserved}|{pct_encoded}|{sub_delims}|:)*'
-reg_name = f'({unreserved}|{pct_encoded}|{sub_delims})*'
-ipvfuture = f'[vV][0-9A-Fa-f]{{1,}}\\.({unreserved}|{sub_delims}|:){{1,}}'
-segment_nz_nc = f'({unreserved}|{pct_encoded}|{sub_delims}|@){{1,}}'
-pchar = f'({unreserved}|{pct_encoded}|{sub_delims}|[:@])'
 ls32 = f'({h16}:{h16}|{ipv4address})'
-query = f'({pchar}|[/?])*'
-fragment = f'({pchar}|[/?])*'
-path_empty = f'({pchar}){{0,0}}'
-segment = f'({pchar})*'
-segment_nz = f'({pchar}){{1,}}'
 ipv6address = (
     f'(({h16}:){{6,6}}{ls32}|::({h16}:){{5,5}}{ls32}|({h16})?::({h16}'
     f':){{4,4}}{ls32}|(({h16}:)?{h16})?::({h16}:){{3,3}}{ls32}|(({h16}'
@@ -26,26 +9,43 @@ ipv6address = (
     f'{ls32}|(({h16}:){{4}}{h16})?::{ls32}|(({h16}:){{5}}{h16})?::{h16}|'
     f'(({h16}:){{6}}{h16})?::)'
 )
-path_absolute = f'/({segment_nz}(/{segment})*)?'
-path_rootless = f'{segment_nz}(/{segment})*'
-path_abempty = f'(/{segment})*'
-path_noscheme = f'{segment_nz_nc}(/{segment})*'
+gen_delims = '[:/?#\\[\\]@]'
+unreserved = '[a-zA-Z0-9\\-._~]'
+sub_delims = "[!$&'()*+,;=]"
+ipvfuture = f'[vV][0-9A-Fa-f]{{1,}}\\.({unreserved}|{sub_delims}|:){{1,}}'
 ip_literal = f'\\[({ipv6address}|{ipvfuture})\\]'
-path = (
-    f'({path_abempty}|{path_absolute}|{path_noscheme}|{path_rootless}|'
-    f'{path_empty})'
-)
+pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
+reg_name = f'({unreserved}|{pct_encoded}|{sub_delims})*'
 host = f'({ip_literal}|{ipv4address}|{reg_name})'
+pchar = f'({unreserved}|{pct_encoded}|{sub_delims}|[:@])'
+path_empty = f'({pchar}){{0,0}}'
+userinfo = f'({unreserved}|{pct_encoded}|{sub_delims}|:)*'
+port = '[0-9]*'
 authority = f'({userinfo}@)?{host}(:{port})?'
-hier_part = (
-    f'(//{authority}{path_abempty}|{path_absolute}|{path_rootless}|'
-    f'{path_empty})'
-)
+segment = f'({pchar})*'
+path_abempty = f'(/{segment})*'
+segment_nz = f'({pchar}){{1,}}'
+path_absolute = f'/({segment_nz}(/{segment})*)?'
+segment_nz_nc = f'({unreserved}|{pct_encoded}|{sub_delims}|@){{1,}}'
+path_noscheme = f'{segment_nz_nc}(/{segment})*'
 relative_part = (
     f'(//{authority}{path_abempty}|{path_absolute}|'
     f'{path_noscheme}|{path_empty})'
 )
+query = f'({pchar}|[/?])*'
+fragment = f'({pchar}|[/?])*'
 relative_ref = f'{relative_part}(\\?{query})?(\\#{fragment})?'
-uri = f'{scheme}:{hier_part}(\\?{query})?(\\#{fragment})?'
+scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
+path_rootless = f'{segment_nz}(/{segment})*'
+path = (
+    f'({path_abempty}|{path_absolute}|{path_noscheme}|{path_rootless}|'
+    f'{path_empty})'
+)
+hier_part = (
+    f'(//{authority}{path_abempty}|{path_absolute}|{path_rootless}|'
+    f'{path_empty})'
+)
 absolute_uri = f'{scheme}:{hier_part}(\\?{query})?'
+uri = f'{scheme}:{hier_part}(\\?{query})?(\\#{fragment})?'
 uri_reference = f'({uri}|{relative_ref})'
+reserved = f'({gen_delims}|{sub_delims})'

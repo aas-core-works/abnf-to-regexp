@@ -1,0 +1,1 @@
+You have a cycle in your ABNF. The rule has been visited more than once: else
