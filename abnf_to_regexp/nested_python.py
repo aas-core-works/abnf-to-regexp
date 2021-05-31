@@ -15,6 +15,7 @@ from typing import (
 import abnf
 import regex as re
 from icontract import require, ensure
+import sortedcontainers
 
 import abnf_to_regexp.abnf_transformation
 import abnf_to_regexp.compression
@@ -132,9 +133,10 @@ def _topological_sort(
     """
     # See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first%20search
     trace = []  # type: List[str]
-    identifiers_without_permanent_marks = set(graph.keys())
-    permanent_marks = set()  # Set[str]
-    temporary_marks = set()  # Set[str]
+    # We use sorted containers to avoid non-deterministic behavior.
+    identifiers_without_permanent_marks = sortedcontainers.SortedSet(graph.keys())
+    permanent_marks = sortedcontainers.SortedSet()  # Set[str]
+    temporary_marks = sortedcontainers.SortedSet()  # Set[str]
 
     visited_more_than_once = None  # type: Optional[str]
 
@@ -163,7 +165,7 @@ def _topological_sort(
         trace.insert(0, an_identifier)
 
     while len(identifiers_without_permanent_marks) > 0 and not visited_more_than_once:
-        visit(next(iter(identifiers_without_permanent_marks)))
+        visit(identifiers_without_permanent_marks[0])
 
     if visited_more_than_once:
         return None, visited_more_than_once
@@ -179,8 +181,9 @@ def _reorder_table_by_dependencies(
 
     Return (re-ordered table, identifier where a cycle has been observed)
     """
-    # Figure out the dependency graph
-    graph = dict()  # type: MutableMapping[str, List[str]]
+    # We construct the graph using a sorted dict to avoid non-deterministic
+    # behavior.
+    graph = sortedcontainers.SortedDict()  # type: MutableMapping[str, List[str]]
     for identifier, regexp in table.items():
         visitor = _ReferenceVisitor()
         visitor.visit(regexp)
