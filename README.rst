@@ -58,12 +58,12 @@ For example, the alternations of character classes are taken together to form a 
 
 Example Conversion
 ==================
-Please see `tests/data/rfc3987/grammar.abnf`_ for an example grammar.
+Please see `test_data/nested-python/rfc3987/grammar.abnf`_ for an example grammar.
 
-The corresponding generated regular expression is stored at `tests/data/rfc3987/expected.out`_.
+The corresponding generated code, *e.g.*, in Python, is stored at `test_data/nested-python/rfc3987/expected.py`_.
 
-.. _tests/data/rfc3987/grammar.abnf: https://github.com/aas-core/abnf-to-regexp/blob/main/tests/data/rfc3987/grammar.abnf
-.. _tests/data/rfc3987/expected.out: https://github.com/aas-core/abnf-to-regexp/blob/main/tests/data/rfc3987/expected.out
+.. _test_data/nested-python/rfc3987/grammar.abnf: https://github.com/aas-core/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/grammar.abnf
+.. _test_data/nested-python/rfc3987/expected.py: https://github.com/aas-core/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/expected.py
 
 Installation
 ============
