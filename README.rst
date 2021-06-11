@@ -62,8 +62,8 @@ Please see `test_data/nested-python/rfc3987/grammar.abnf`_ for an example gramma
 
 The corresponding generated code, *e.g.*, in Python, is stored at `test_data/nested-python/rfc3987/expected.py`_.
 
-.. _test_data/nested-python/rfc3987/grammar.abnf: https://github.com/aas-core/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/grammar.abnf
-.. _test_data/nested-python/rfc3987/expected.py: https://github.com/aas-core/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/expected.py
+.. _test_data/nested-python/rfc3987/grammar.abnf: https://github.com/aas-core-works/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/grammar.abnf
+.. _test_data/nested-python/rfc3987/expected.py: https://github.com/aas-core-works/abnf-to-regexp/blob/main/test_data/nested-python/rfc3987/expected.py
 
 Installation
 ============
