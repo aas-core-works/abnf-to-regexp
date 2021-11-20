@@ -1,0 +1,24 @@
+; From:
+; https://www.rfc-editor.org/rfc/rfc7231#section-3.1.1.1,
+; https://www.rfc-editor.org/rfc/rfc7230#section-3.2.3 and
+; https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6
+
+media-type = type "/" subtype *( OWS ";" OWS parameter )
+type       = token
+subtype    = token
+
+parameter      = token "=" ( token / quoted-string )
+
+token          = 1*tchar
+tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+                / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+                / DIGIT / ALPHA
+                ; any VCHAR, except delimiters
+
+OWS            = *( SP / HTAB ) ; optional whitespace
+
+quoted-string  = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+qdtext         = HTAB / SP /%x21 / %x23-5B / %x5D-7E / obs-text
+obs-text       = %x80-FF
+
+quoted-pair    = "\" ( HTAB / SP / VCHAR / obs-text )
