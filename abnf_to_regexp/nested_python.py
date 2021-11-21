@@ -341,8 +341,17 @@ class _Representer(Visitor):
         self.visit(element.element)
         self.stream.write_text(")")
 
+    _NO_NEED_TO_ESCAPE_RE = re.compile(r"[a-zA-Z_0-9\-]*")
+
     def visit_literal(self, element: Literal) -> None:
-        escaped_value = re.escape(element.value)
+        # ``re.escape`` is a bit too conservative and produces unreadable regular
+        # expressions. To make the expressions more readable, we avoid escaping
+        # the cases where we are sure no escapes are necessary.
+        if _Representer._NO_NEED_TO_ESCAPE_RE.fullmatch(element.value):
+            escaped_value = element.value
+        else:
+            escaped_value = re.escape(element.value)
+
         assert isinstance(escaped_value, str)
 
         self.stream.write_text(escaped_value)

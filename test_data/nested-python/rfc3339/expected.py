@@ -1,7 +1,7 @@
 date_fullyear = '[0-9]{4,4}'
 date_mday = '[0-9]{2,2}'
 date_month = '[0-9]{2,2}'
-full_date = f'{date_fullyear}\\-{date_month}\\-{date_mday}'
+full_date = f'{date_fullyear}-{date_month}-{date_mday}'
 time_hour = '[0-9]{2,2}'
 time_minute = '[0-9]{2,2}'
 time_second = '[0-9]{2,2}'
