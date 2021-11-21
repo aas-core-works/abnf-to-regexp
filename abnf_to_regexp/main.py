@@ -53,13 +53,28 @@ def run(
     """Execute the main routine."""
     pass  # for pydocstyle
 
-    class RuleFromFile(abnf.Rule):  # type: ignore
+    class OurRule(abnf.Rule):  # type: ignore
         """Represent our ABNF rule list read from a file."""
 
         pass
 
+    # We in-line abnf.parser.Rule.from_file and adapt it to be more robust to different
+    # line endings.
+
+    text = params.input_path.read_text(encoding="utf-8")
+
+    # Enforce CRLF line endings
+    text = text.replace("\r", "")
+
+    if not text.endswith("\n"):
+        text = text + "\n"
+
+    text = text.replace("\n", "\r\n")
+
     try:
-        RuleFromFile.from_file(params.input_path)
+        node = abnf.parser.ABNFGrammarRule("rulelist").parse_all(text)
+        visitor = abnf.parser.ABNFGrammarNodeVisitor(rule_cls=OurRule)
+        visitor.visit(node)
     except abnf.ParseError as err:
         text = params.input_path.read_text()
         line = 1
@@ -81,17 +96,17 @@ def run(
         stderr.write(f"Failed to interpret the grammar: {err}")
         return 1
 
-    for rule in RuleFromFile.rules():
+    for rule in OurRule.rules():
         if not hasattr(rule, "definition"):
             stderr.write(f"Unexpected rule without a definition: {rule.name!r}")
             return 1
 
     if params.fmt == Format.SINGLE_REGEXP:
-        regexp = abnf_to_regexp.single_regexp.translate(rule_cls=RuleFromFile)
+        regexp = abnf_to_regexp.single_regexp.translate(rule_cls=OurRule)
         representation = abnf_to_regexp.single_regexp.represent(regexp)
 
     elif params.fmt == Format.PYTHON_NESTED:
-        table, error = abnf_to_regexp.nested_python.translate(rule_cls=RuleFromFile)
+        table, error = abnf_to_regexp.nested_python.translate(rule_cls=OurRule)
         if error:
             stderr.write(error + "\n")
             return 1

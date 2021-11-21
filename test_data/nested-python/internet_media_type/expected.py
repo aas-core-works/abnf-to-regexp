@@ -1,0 +1,11 @@
+tchar = "[!#$%&'*+\\-.^_`|~0-9a-zA-Z]"
+token = f'({tchar}){{1,}}'
+type = f'{token}'
+subtype = f'{token}'
+ows = '[ \t]*'
+obs_text = '[\\x80-\\xff]'
+qdtext = f'([\t !#-\\[\\]-~]|{obs_text})'
+quoted_pair = f'\\\\([\t !-~]|{obs_text})'
+quoted_string = f'"({qdtext}|{quoted_pair})*"'
+parameter = f'{token}=({token}|{quoted_string})'
+media_type = f'{type}/{subtype}({ows};{ows}{parameter})*'
