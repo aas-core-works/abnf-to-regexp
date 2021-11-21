@@ -1,5 +1,5 @@
 tchar = "[!#$%&'*+\\-.^_`|~0-9a-zA-Z]"
-token = f'({tchar}){{1,}}'
+token = f'({tchar})+'
 type = f'{token}'
 subtype = f'{token}'
 ows = '[ \t]*'

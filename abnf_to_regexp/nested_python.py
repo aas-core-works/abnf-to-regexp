@@ -318,7 +318,16 @@ class _Representer(Visitor):
             and element.min_occurrences > 0
             and element.max_occurrences is None
         ):
-            suffix = f"{{{element.min_occurrences},}}"
+            if element.min_occurrences == 1:
+                suffix = "+"
+            else:
+                suffix = f"{{{element.min_occurrences},}}"
+        elif (
+            element.min_occurrences is not None
+            and element.max_occurrences is not None
+            and element.min_occurrences == element.max_occurrences
+        ):
+            suffix = f"{{{element.min_occurrences}}}"
         else:
             suffix = f"{{{element.min_occurrences},{element.max_occurrences}}}"
 
