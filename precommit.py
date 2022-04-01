@@ -99,7 +99,7 @@ def main() -> int:
     if Step.PYLINT in selects and Step.PYLINT not in skips:
         # fmt: off
         print("Pylint'ing...")
-        pylint_targets = ["abnf_to_regexp"]
+        pylint_targets = ["abnf_to_regexp", "tests"]
         subprocess.check_call(
             ["pylint", "--rcfile=pylint.rc"] + pylint_targets, cwd=str(repo_root)
         )

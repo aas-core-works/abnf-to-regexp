@@ -1,3 +1,6 @@
+# pylint: disable=missing-docstring
+# pylint: disable=no-self-use
+
 import io
 import os
 import pathlib
@@ -151,7 +154,7 @@ class TestAgainstRecordings(unittest.TestCase):
             expected_out_pth = case_dir / "expected.py"
 
             # Set to True if you are debugging or updating the tests
-            record = True  # TODO (mristin, 2022-04-1): undo
+            record = False
 
             if record:
                 expected_err_pth.write_text(stderr.getvalue(), encoding='utf-8')
@@ -178,7 +181,7 @@ class TestAgainstRecordings(unittest.TestCase):
                 code = stdout.getvalue().strip()
                 try:
                     compile(code, "<abnf-to-regexp-test>", mode='exec')
-                except Exception as err:
+                except Exception:
                     raise AssertionError(
                         f"Failed to compile code as in {expected_out_pth}:\n"
                         f"{code}"
