@@ -240,7 +240,7 @@ class _TokenKind(enum.Enum):
 
 
 class _Token:
-    """Represent a part of the string representing a regular expression """
+    """Capture a part of the string representing a regular expression."""
 
     # fmt: off
     @require(
