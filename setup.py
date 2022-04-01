@@ -41,7 +41,7 @@ setup(
     # fmt: off
     extras_require={
         "dev": [
-            "black==20.8b1",
+            "black==22.3.0",
             "mypy==0.812",
             "pylint==2.3.1",
             "pydocstyle>=2.1.1,<3",
