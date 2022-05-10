@@ -93,7 +93,7 @@ class _Representer(Convertor[str]):
             and element.max_occurrences is not None
             and element.max_occurrences > 0
         ):
-            suffix = f"{{{element.max_occurrences}}}"
+            suffix = f"{{,{element.max_occurrences}}}"
         elif (
             element.min_occurrences is not None
             and element.min_occurrences > 0
