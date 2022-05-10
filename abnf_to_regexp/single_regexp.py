@@ -54,6 +54,8 @@ class ABNFTransformer(abnf_to_regexp.abnf_transformation.TransformerToElement):
             )
         elif isinstance(rule.definition, abnf.parser.Literal):
             return self.transform_literal(literal=rule.definition)
+        elif isinstance(rule.definition, abnf.parser.Rule):
+            return self.transform_rule(rule=rule.definition)
         else:
             raise AssertionError(f"Unhandled rule definition: {rule.definition}")
 
