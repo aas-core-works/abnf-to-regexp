@@ -1,0 +1,1 @@
+urn:example:foo-bar-baz-qux?+CCResolve:cc=uk
