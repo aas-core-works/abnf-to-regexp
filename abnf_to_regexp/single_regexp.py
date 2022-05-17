@@ -54,6 +54,8 @@ class ABNFTransformer(abnf_to_regexp.abnf_transformation.TransformerToElement):
             )
         elif isinstance(rule.definition, abnf.parser.Literal):
             return self.transform_literal(literal=rule.definition)
+        elif isinstance(rule.definition, abnf.parser.Rule):
+            return self.transform_rule(rule=rule.definition)
         else:
             raise AssertionError(f"Unhandled rule definition: {rule.definition}")
 
@@ -93,7 +95,7 @@ class _Representer(Convertor[str]):
             and element.max_occurrences is not None
             and element.max_occurrences > 0
         ):
-            suffix = f"{{{element.max_occurrences}}}"
+            suffix = f"{{0,{element.max_occurrences}}}"
         elif (
             element.min_occurrences is not None
             and element.min_occurrences > 0

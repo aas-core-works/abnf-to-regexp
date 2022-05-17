@@ -1,0 +1,33 @@
+namestring    = assigned-name
+                [ rq-components ]
+                [ "#" f-component ]
+
+assigned-name = "urn" ":" NID ":" NSS
+
+NID           = (alphanum) 0*30(ldh) (alphanum)
+
+ldh           = alphanum / "-"
+
+NSS           = pchar *(pchar / "/")
+
+rq-components = [ "?+" r-component ]
+                [ "?=" q-component ]
+
+r-component   = pchar *( pchar / "/" / "?" )
+
+q-component   = pchar *( pchar / "/" / "?" )
+
+f-component   = fragment
+
+alphanum      = ALPHA / DIGIT
+
+pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+
+unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+
+pct-encoded   = "%" HEXDIG HEXDIG
+
+sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+              / "*" / "+" / "," / ";" / "="
+
+fragment      = *( pchar / "/" / "?" )
