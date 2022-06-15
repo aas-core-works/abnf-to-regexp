@@ -7,6 +7,11 @@ CHANGELOG
     Please keep this file at 72 line width so that we can copy-paste
     the release logs directly into commit messages.
 
+1.1.1 (2022-06-15)
+==================
+* Add support for Python 3.9 and 3.10 (#24)
+* Fix escaping for UTF-32 (#23)
+
 1.1.0 (2022-05-22)
 ==================
 * Add ``nested-in-python`` representation (#3)
