@@ -1,11 +1,13 @@
 scheme = '[a-zA-Z][a-zA-Z0-9+\\-.]*'
 ucschar = (
-    '[\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef\\u10000-\\u1fffd'
-    '\\u20000-\\u2fffd\\u30000-\\u3fffd\\u40000-\\u4fffd'
-    '\\u50000-\\u5fffd\\u60000-\\u6fffd\\u70000-\\u7fffd'
-    '\\u80000-\\u8fffd\\u90000-\\u9fffd\\ua0000-\\uafffd'
-    '\\ub0000-\\ubfffd\\uc0000-\\ucfffd\\ud0000-\\udfffd'
-    '\\ue1000-\\uefffd]'
+    '[\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef'
+    '\\U00010000-\\U0001fffd\\U00020000-\\U0002fffd'
+    '\\U00030000-\\U0003fffd\\U00040000-\\U0004fffd'
+    '\\U00050000-\\U0005fffd\\U00060000-\\U0006fffd'
+    '\\U00070000-\\U0007fffd\\U00080000-\\U0008fffd'
+    '\\U00090000-\\U0009fffd\\U000a0000-\\U000afffd'
+    '\\U000b0000-\\U000bfffd\\U000c0000-\\U000cfffd'
+    '\\U000d0000-\\U000dfffd\\U000e1000-\\U000efffd]'
 )
 iunreserved = f'([a-zA-Z0-9\\-._~]|{ucschar})'
 pct_encoded = '%[0-9A-Fa-f][0-9A-Fa-f]'
@@ -39,7 +41,7 @@ ihier_part = (
     f'(//{iauthority}{ipath_abempty}|{ipath_absolute}|'
     f'{ipath_rootless}|{ipath_empty})'
 )
-iprivate = '[\\ue000-\\uf8ff\\uf0000-\\uffffd\\u100000-\\u10fffd]'
+iprivate = '[\\ue000-\\uf8ff\\U000f0000-\\U000ffffd\\U00100000-\\U0010fffd]'
 iquery = f'({ipchar}|{iprivate}|[/?])*'
 absolute_iri = f'{scheme}:{ihier_part}(\\?{iquery})?'
 gen_delims = '[:/?#\\[\\]@]'
