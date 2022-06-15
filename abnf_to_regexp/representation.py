@@ -13,10 +13,10 @@ def escape_for_character_class(symbol: str) -> str:
     elif symbol == "]":
         return "\\]"
     elif symbol not in string.printable and ord(symbol) <= 255:
-        hexord = format(ord(symbol), "x")
-        return f"\\x{hexord}"
-    elif ord(symbol) > 255:
-        hexord = format(ord(symbol), "x")
-        return f"\\u{hexord}"
+        return f"\\x{ord(symbol):02x}"
+    elif 255 < ord(symbol) < 0x00010000:
+        return f"\\u{ord(symbol):04x}"
+    elif 0x10000 <= ord(symbol) <= 0x10FFFF:
+        return f"\\U{ord(symbol):08x}"
     else:
         return symbol

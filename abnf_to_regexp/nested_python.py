@@ -2,6 +2,7 @@
 import collections
 import enum
 import io
+import string
 from typing import (
     Mapping,
     Type,
@@ -357,13 +358,21 @@ class _Representer(Visitor):
         # expressions. To make the expressions more readable, we avoid escaping
         # the cases where we are sure no escapes are necessary.
         if _Representer._NO_NEED_TO_ESCAPE_RE.fullmatch(element.value):
-            escaped_value = element.value
+            self.stream.write_text(element.value)
         else:
-            escaped_value = re.escape(element.value)
+            for character in element.value:
+                if character not in string.printable and ord(character) <= 255:
+                    escaped_value = f"\\x{ord(character):02x}"
+                elif 255 < ord(character) < 0x10000:
+                    escaped_value = f"\\u{ord(character):04x}"
+                elif 0x10000 <= ord(character) <= 0x10FFFF:
+                    escaped_value = f"\\U{ord(character):08x}"
+                else:
+                    escaped_value = re.escape(character)
 
-        assert isinstance(escaped_value, str)
+                assert isinstance(escaped_value, str)
 
-        self.stream.write_text(escaped_value)
+                self.stream.write_text(escaped_value)
 
     def visit_range(self, element: Range) -> None:
         self.stream.write_text(
