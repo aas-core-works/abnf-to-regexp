@@ -154,16 +154,24 @@ def main() -> int:
         )
 
     if Step.CHECK_HELP_IN_README in selects and Step.CHECK_HELP_IN_README not in skips:
-        cmd = [sys.executable, "check_help_in_readme.py"]
-        if overwrite:
-            cmd.append("--overwrite")
+        if sys.version_info < (3, 10):
+            cmd = [sys.executable, "check_help_in_readme.py"]
+            if overwrite:
+                cmd.append("--overwrite")
 
-        if not overwrite:
-            print("Checking that --help's and the doc coincide...")
+            if not overwrite:
+                print("Checking that --help's and the doc coincide...")
+            else:
+                print("Overwriting the --help's in the doc...")
+
+            subprocess.check_call(cmd)
         else:
-            print("Overwriting the --help's in the doc...")
-
-        subprocess.check_call(cmd)
+            print(
+                f"Since Python 3.10 changed how the argparse renders the --help, "
+                f"we can compare --help only against Python <= 3.9. "
+                f"Hence we do not check whether the --help coincides with "
+                f"the readme on your version of Python ({sys.version})."
+            )
     else:
         print("Skipped checking that --help's and the doc coincide.")
 
