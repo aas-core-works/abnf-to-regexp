@@ -53,7 +53,7 @@ def run(
     """Execute the main routine."""
     pass  # for pydocstyle
 
-    class OurRule(abnf.Rule):  # type: ignore
+    class OurRule(abnf.Rule):
         """Represent our ABNF rule list read from a file."""
 
         pass
@@ -96,7 +96,7 @@ def run(
         stderr.write(f"Failed to interpret the grammar: {err}")
         return 1
 
-    for rule in OurRule.rules():
+    for rule in OurRule.rules():  # type: ignore
         if not hasattr(rule, "definition"):
             stderr.write(f"Unexpected rule without a definition: {rule.name!r}")
             return 1

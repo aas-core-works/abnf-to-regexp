@@ -63,7 +63,7 @@ class ABNFTransformer(abnf_to_regexp.abnf_transformation.TransformerToElement):
 @require(lambda rule_cls: len(rule_cls.rules()) > 0)
 def translate(rule_cls: Type[abnf.Rule]) -> Element:
     """Translate the ABNF rule to a regular expression."""
-    regexp = ABNFTransformer().transform_rule(rule=rule_cls.rules()[0])
+    regexp = ABNFTransformer().transform_rule(rule=rule_cls.rules()[0])  # type: ignore
     regexp = abnf_to_regexp.compression.compress(regexp)
     return regexp
 
