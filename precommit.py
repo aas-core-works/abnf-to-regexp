@@ -74,7 +74,8 @@ def main() -> int:
             "precommit.py",
             "setup.py",
             "check_init_and_setup_coincide.py",
-            "check_help_in_readme.py"
+            "check_help_in_readme.py",
+            "dev_scripts"
         ]
         # fmt: on
 
@@ -90,7 +91,7 @@ def main() -> int:
     if Step.MYPY in selects and Step.MYPY not in skips:
         print("Mypy'ing...")
         # fmt: off
-        mypy_targets = ["abnf_to_regexp", "tests"]
+        mypy_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
         subprocess.check_call(["mypy", "--strict"] + mypy_targets, cwd=str(repo_root))
         # fmt: on
     else:
@@ -99,7 +100,7 @@ def main() -> int:
     if Step.PYLINT in selects and Step.PYLINT not in skips:
         # fmt: off
         print("Pylint'ing...")
-        pylint_targets = ["abnf_to_regexp", "tests"]
+        pylint_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
         subprocess.check_call(
             ["pylint", "--rcfile=pylint.rc"] + pylint_targets, cwd=str(repo_root)
         )

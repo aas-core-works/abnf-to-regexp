@@ -214,7 +214,7 @@ def translate(
 
     transformer = ABNFTransformer()
 
-    for rule in rule_cls.rules():
+    for rule in rule_cls.rules():  # type: ignore
         table[rule.name] = abnf_to_regexp.compression.compress(
             transformer.transform_parser(rule.definition)
         )
