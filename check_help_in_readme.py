@@ -79,6 +79,11 @@ def capture_output_lines(command: str) -> List[str]:
         # is not properly inherited.
         command_parts[0] = sys.executable
 
+    if not os.path.exists(command_parts[0]):
+        raise FileNotFoundError(
+            f"The python interpreter could not be found: {command_parts[0]}"
+        )
+
     proc = subprocess.Popen(
         command_parts,
         stdout=subprocess.PIPE,
@@ -197,8 +202,6 @@ def main() -> int:
             if error:
                 print(error, file=sys.stderr)
                 return -1
-
-    return 0
 
     return 0
 

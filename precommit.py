@@ -181,7 +181,7 @@ def main() -> int:
             else:
                 print("Overwriting the --help's in the doc...")
 
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, cwd=str(repo_root))
         else:
             print(
                 f"Since Python 3.10 changed how the argparse renders the --help, "

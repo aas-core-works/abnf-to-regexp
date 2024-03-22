@@ -35,7 +35,7 @@ For example, the alternations of character classes are taken together to form a 
 
 ``--help``
 ==========
-.. Help starts: abnf-to-regexp --help
+.. Help starts: python3 abnf_to_regexp/main.py --help
 .. code-block::
 
     usage: abnf-to-regexp [-h] -i INPUT [-o OUTPUT]
@@ -54,7 +54,7 @@ For example, the alternations of character classes are taken together to form a 
                             Output format; for example a single regular expression
                             or a code snippet
 
-.. Help ends: abnf-to-regexp --help
+.. Help ends: python3 abnf_to_regexp/main.py --help
 
 Example Conversion
 ==================
