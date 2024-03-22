@@ -1,5 +1,8 @@
+.idea/
+
 # Python 3.6 specific
 venv36/
+venv*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
