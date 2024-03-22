@@ -1,4 +1,5 @@
 """Translate an ABNF to a code snippet of Python."""
+
 import collections
 import enum
 import io

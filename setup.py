@@ -4,6 +4,7 @@ See:
 https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
+
 import os
 
 from setuptools import setup, find_packages
@@ -42,8 +43,8 @@ setup(
     # fmt: off
     extras_require={
         "dev": [
-            "black==22.3.0",
-            "mypy==0.812",
+            "black==24.3.0",
+            "mypy==1.9.0",
             "pylint==2.3.1",
             "pydocstyle>=2.1.1,<3",
             "coverage>=4.5.1,<5",

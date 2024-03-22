@@ -1,4 +1,5 @@
 """Provide base building blocks for the regular expressions."""
+
 import abc
 from typing import Iterable, Optional, Union, TypeVar, Generic
 

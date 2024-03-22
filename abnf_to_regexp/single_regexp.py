@@ -1,4 +1,5 @@
 """Transform ABNF to a single regular expression."""
+
 from typing import Type, List
 
 import abnf

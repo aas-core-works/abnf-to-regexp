@@ -1,4 +1,5 @@
 """Provide building blocks for transformation of ABNF to something else."""
+
 import abc
 import bisect
 import itertools

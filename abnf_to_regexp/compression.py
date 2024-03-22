@@ -1,4 +1,5 @@
 """Compress regular expressions to an equivalent shorter form."""
+
 from typing import List, Union
 
 import regex as re
