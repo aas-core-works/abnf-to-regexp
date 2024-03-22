@@ -22,7 +22,7 @@ with open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fid:
 setup(
     name="abnf-to-regexp",
     # Don't forget to update the version in __init__.py!
-    version="1.1.2",
+    version="1.1.3",
     description="Convert ABNF grammars to Python regular expressions.",
     long_description=long_description,
     url="https://github.com/aas-core-works/abnf-to-regexp",

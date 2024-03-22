@@ -7,6 +7,11 @@ CHANGELOG
     Please keep this file at 72 line width so that we can copy-paste
     the release logs directly into commit messages.
 
+1.1.3 (2024-03-22)
+==================
+* Fix for the case no min. and only max. repetition (#34)
+* Discontinue Python 3.7 and include 3.11 (#33)
+
 1.1.2 (2022-09-28)
 ==================
 *  Upgrade to abnf 2.0.0 (#27)
