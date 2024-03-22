@@ -1,4 +1,5 @@
 """Provide common functions for representing regular expressions."""
+
 import string
 
 

@@ -80,10 +80,13 @@ def main() -> int:
         # fmt: on
 
         if overwrite:
-            subprocess.check_call(["black"] + black_targets, cwd=str(repo_root))
+            subprocess.check_call(
+                [sys.executable, "-m", "black"] + black_targets, cwd=str(repo_root)
+            )
         else:
             subprocess.check_call(
-                ["black", "--check"] + black_targets, cwd=str(repo_root)
+                [sys.executable, "-m", "black", "--check"] + black_targets,
+                cwd=str(repo_root),
             )
     else:
         print("Skipped black'ing.")
@@ -92,7 +95,13 @@ def main() -> int:
         print("Mypy'ing...")
         # fmt: off
         mypy_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
-        subprocess.check_call(["mypy", "--strict"] + mypy_targets, cwd=str(repo_root))
+        subprocess.check_call(
+            [
+                sys.executable,
+                "-m",
+                "mypy",
+                "--strict"
+             ] + mypy_targets, cwd=str(repo_root))
         # fmt: on
     else:
         print("Skipped mypy'ing.")
@@ -102,7 +111,12 @@ def main() -> int:
         print("Pylint'ing...")
         pylint_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
         subprocess.check_call(
-            ["pylint", "--rcfile=pylint.rc"] + pylint_targets, cwd=str(repo_root)
+            [
+                sys.executable,
+                "-m",
+                "pylint",
+                "--rcfile=pylint.rc"
+            ] + pylint_targets, cwd=str(repo_root)
         )
         # fmt: on
     else:
@@ -116,6 +130,8 @@ def main() -> int:
         # fmt: off
         subprocess.check_call(
             [
+                sys.executable,
+                "-m",
                 "coverage", "run",
                 "--source", "abnf_to_regexp",
                 "-m", "unittest", "discover"
