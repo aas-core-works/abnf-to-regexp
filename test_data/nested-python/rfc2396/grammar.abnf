@@ -1,0 +1,83 @@
+; From: https://www.ietf.org/rfc/rfc2396.txt
+; Note that RFC 3986 is a newer version of the URI standard.
+
+
+alpha         = lowalpha / upalpha
+
+lowalpha      = "a" / "b" / "c" / "d" / "e" / "f" / "g" / "h" / "i" /
+                "j" / "k" / "l" / "m" / "n" / "o" / "p" / "q" / "r" /
+                "s" / "t" / "u" / "v" / "w" / "x" / "y" / "z"
+
+upalpha       = "A" / "B" / "C" / "D" / "E" / "F" / "G" / "H" / "I" /
+                "J" / "K" / "L" / "M" / "N" / "O" / "P" / "Q" / "R" /
+                "S" / "T" / "U" / "V" / "W" / "X" / "Y" / "Z"
+
+digit         = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" /
+                "8" / "9"
+
+alphanum      = alpha / digit
+
+uric          = reserved / unreserved / escaped
+
+reserved      = ";" / "/" / "?" / ":" / "@" / "&" / "=" / "+" /
+                "$" / ","
+
+unreserved    = alphanum / mark
+
+mark          = "-" / "-" / "." / "!" / "~" / "*" / "'" / "(" / ")"
+
+escaped       = "%" hex hex
+
+hex           = digit / "A" / "B" / "C" / "D" / "E" / "F" /
+                        "a" / "b" / "c" / "d" / "e" / "f"
+
+absoluteURI   = scheme ":" ( hier-part / opaque-part )
+
+hier-part     = ( net-path / abs-path ) [ "?" query ]
+net-path      = "//" authority [ abs-path ]
+abs-path      = "/"  path-segments
+
+opaque-part   = uric-no-slash *uric
+
+uric-no-slash = unreserved / escaped / ";" / "?" / ":" / "@" /
+                "&" / "=" / "+" / "$" / ","
+
+scheme        = alpha *( alpha / digit / "+" / "-" / "." )
+
+authority     = server / reg-name
+
+reg-name      = 1*( unreserved / escaped / "$" / "," /
+                    ";" / ":" / "@" / "&" / "=" / "+" )
+
+server        = [ [ userinfo "@" ] hostport ]
+
+userinfo      = *( unreserved / escaped /
+                   ";" / ":" / "&" / "=" / "+" / "$" / "," )
+
+hostport      = host [ ":" port ]
+host          = hostname / IPv4address
+hostname      = *( domainlabel "." ) toplabel [ "." ]
+domainlabel   = alphanum / alphanum *( alphanum / "-" ) alphanum
+toplabel      = alpha / alpha *( alphanum / "-" ) alphanum
+
+IPv4address   = 1*digit "." 1*digit "." 1*digit "." 1*digit
+port          = *digit
+
+path          = [ abs-path / opaque-part ]
+path-segments = segment *( "/" segment )
+segment       = *pchar *( ";" param )
+param         = *pchar
+pchar         = unreserved / escaped /
+                ":" / "@" / "&" / "=" / "+" / "$" / ","
+
+query         = *uric
+
+URI-reference = [ absoluteURI / relativeURI ] [ "#" fragment ]
+
+fragment      = *uric
+
+relativeURI   = ( net-path / abs-path / rel-path ) [ "?" query ]
+
+rel-path      = rel-segment [ abs-path ]
+rel-segment   = 1*( unreserved / escaped /
+                    ";" / "@" / "&" / "=" / "+" / "$" / "," )
