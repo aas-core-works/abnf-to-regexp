@@ -1,5 +1,6 @@
 ; From: https://www.ietf.org/rfc/rfc2396.txt
-; Note that RFC 3986 is a newer version of the URI standard
+; Note that RFC 3986 is a newer version of the URI standard.
+
 
 alpha         = lowalpha / upalpha
 
