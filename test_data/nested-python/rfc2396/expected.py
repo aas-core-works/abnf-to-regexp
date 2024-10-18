@@ -1,5 +1,5 @@
 alphanum = '[a-zA-Z0-9]'
-mark = "[\\-\\-.!~*'()]"
+mark = "[\\-_.!~*'()]"
 unreserved = f'({alphanum}|{mark})'
 hex = (
     '([0-9]|[aA]|[bB]|[cC]|[dD]|[eE]|[fF]|[aA]|[bB]|[cC]|[dD]|[e'
