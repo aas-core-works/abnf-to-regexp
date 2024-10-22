@@ -1,0 +1,90 @@
+; Contains RFC 2396 (URI) and the amendments of RFC 2732 (IPv6)
+; From: https://www.ietf.org/rfc/rfc2396.txt and
+; https://www.ietf.org/rfc/rfc2732.txt. Together, they specify
+; `xs:anyURI` in XSD version 1.0:
+; https://www.w3.org/TR/xmlschema-2/#anyURI.
+
+; The following changes have been made to RFC 2396:
+;   1. change the 'host' non-terminal to add an IPv6 option
+;   2. Replace the definition of 'IPv4address' with that of RFC 2373
+;   3. Add "[" and "]" to the set of `reserved` characters
+
+; Note, that the amendments of RFC 2396 refer to definitions of yet
+; another RFC, namely RFC 2373 for the definitions of `IPv6address`
+; and `IPv4address`. These have been taken from here:
+; https://www.ietf.org/rfc/rfc2373.txt
+
+alphanum      = alpha / digit
+
+uric          = reserved / unreserved / escaped
+
+reserved      = ";" / "/" / "?" / ":" / "@" / "&" / "=" / "+" /
+                "$" / "," / "[" / "]"
+
+unreserved    = alphanum / mark
+
+mark          = "-" / "_" / "." / "!" / "~" / "*" / "'" / "(" / ")"
+
+escaped       = "%" hex hex
+
+hex           = digit / "A" / "B" / "C" / "D" / "E" / "F" /
+                        "a" / "b" / "c" / "d" / "e" / "f"
+
+absoluteURI   = scheme ":" ( hier-part / opaque-part )
+
+hier-part     = ( net-path / abs-path ) [ "?" query ]
+net-path      = "//" authority [ abs-path ]
+abs-path      = "/"  path-segments
+
+opaque-part   = uric-no-slash *uric
+
+uric-no-slash = unreserved / escaped / ";" / "?" / ":" / "@" /
+                "&" / "=" / "+" / "$" / ","
+
+scheme        = alpha *( alpha / digit / "+" / "-" / "." )
+
+authority     = server / reg-name
+
+reg-name      = 1*( unreserved / escaped / "$" / "," /
+                    ";" / ":" / "@" / "&" / "=" / "+" )
+
+server        = [ [ userinfo "@" ] hostport ]
+
+userinfo      = *( unreserved / escaped /
+                   ";" / ":" / "&" / "=" / "+" / "$" / "," )
+
+hostport      = host [ ":" port ]
+host          = hostname / IPv4address / IPv6reference
+
+ipv6reference = "[" IPv6address "]"
+IPv6address = hexpart [ ":" IPv4address ]
+IPv6prefix  = hexpart "/" 1*2DIGIT
+hexpart = hexseq / hexseq "::" [ hexseq ] / "::" [ hexseq ]
+hexseq  = hex4 *( ":" hex4)
+hex4    = 1*4HEXDIG
+
+hostname      = *( domainlabel "." ) toplabel [ "." ]
+domainlabel   = alphanum / alphanum *( alphanum / "-" ) alphanum
+toplabel      = alpha / alpha *( alphanum / "-" ) alphanum
+
+IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
+port          = *digit
+
+path          = [ abs-path / opaque-part ]
+path-segments = segment *( "/" segment )
+segment       = *pchar *( ";" param )
+param         = *pchar
+pchar         = unreserved / escaped /
+                ":" / "@" / "&" / "=" / "+" / "$" / ","
+
+query         = *uric
+
+URI-reference = [ absoluteURI / relativeURI ] [ "#" fragment ]
+
+fragment      = *uric
+
+relativeURI   = ( net-path / abs-path / rel-path ) [ "?" query ]
+
+rel-path      = rel-segment [ abs-path ]
+rel-segment   = 1*( unreserved / escaped /
+                    ";" / "@" / "&" / "=" / "+" / "$" / "," )
