@@ -140,7 +140,7 @@ def main() -> int:
         "--format",
         help="Output format; for example a single regular expression or a code snippet",
         choices=[entry.value for entry in Format],
-        default=Format.SINGLE_REGEXP,
+        default=Format.SINGLE_REGEXP.value,
     )
     args = parser.parse_args()
 
