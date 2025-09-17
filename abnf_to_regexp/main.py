@@ -58,14 +58,14 @@ def run(
 
         pass
 
-    # We in-line abnf.parser.Rule.from_file and adapt it to be more robust to different
-    # line endings.
-
+    # Path.read_text() uses open() without newline parameter,
+    # so universal newlines mode is enabled. From
+    # https://docs.python.org/3.13/library/functions.html#open this means:
+    #  Lines in the input can end in '\n', '\r', or '\r\n',
+    #  and these are translated into '\n' before being returned to the caller.
     text = params.input_path.read_text(encoding="utf-8")
 
     # Enforce CRLF line endings
-    text = text.replace("\r", "")
-
     if not text.endswith("\n"):
         text = text + "\n"
 
@@ -88,7 +88,6 @@ def run(
         stderr.write(
             f"Parsing error at line {line}: {err}:\n\n"
             f"{text[err.start:err.start + 200]!r};\n"
-            "did you make sure that the line endings are stored as CRLF?"
         )
         return 1
 
