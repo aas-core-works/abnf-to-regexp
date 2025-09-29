@@ -57,7 +57,7 @@ irelative_part = (
     f'(//{iauthority}{ipath_abempty}|{ipath_absolute}|'
     f'{ipath_noscheme}|{ipath_empty})'
 )
-irelative_ref = f'{irelative_part}(\\?{iquery})?(\\#{ifragment})?'
-iri = f'{scheme}:{ihier_part}(\\?{iquery})?(\\#{ifragment})?'
+irelative_ref = f'{irelative_part}(\\?{iquery})?(#{ifragment})?'
+iri = f'{scheme}:{ihier_part}(\\?{iquery})?(#{ifragment})?'
 iri_reference = f'({iri}|{irelative_ref})'
 reserved = f'({gen_delims}|{sub_delims})'

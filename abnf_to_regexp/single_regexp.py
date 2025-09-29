@@ -1,5 +1,6 @@
 """Transform ABNF to a single regular expression."""
 
+import string
 from typing import Type, List
 
 import abnf
@@ -123,9 +124,27 @@ class _Representer(Convertor[str]):
 
     # noinspection PyMethodMayBeStatic
     def convert_literal(self, element: Literal) -> str:
-        escaped_value = re.escape(element.value)
-        assert isinstance(escaped_value, str)
-        return escaped_value
+        escaped_string = ""
+        # code copied from nested_python.visit_literal()
+        for character in element.value:
+            if character not in string.printable and ord(character) <= 255:
+                escaped_value = f"\\x{ord(character):02x}"
+            elif 255 < ord(character) < 0x10000:
+                escaped_value = f"\\u{ord(character):04x}"
+            elif 0x10000 <= ord(character) <= 0x10FFFF:
+                escaped_value = f"\\U{ord(character):08x}"
+            elif ord(character) == 0x0023:  # number sign
+                # has no special meaning and thus must not be escaped
+                # for compatiblity. Looks like a defect in python's
+                # re.escape at least in versions 3.7 <= v <= 3.13.7
+                escaped_value = character
+            else:
+                escaped_value = re.escape(character)
+            # end of code copy
+            escaped_string += escaped_value
+
+        assert isinstance(escaped_string, str)
+        return escaped_string
 
     # noinspection PyMethodMayBeStatic
     def convert_range(self, element: Range) -> str:
