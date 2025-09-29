@@ -369,10 +369,12 @@ class _Representer(Visitor):
                     escaped_value = f"\\u{ord(character):04x}"
                 elif 0x10000 <= ord(character) <= 0x10FFFF:
                     escaped_value = f"\\U{ord(character):08x}"
-                elif ord(character) == 0x0023:  # number sign
-                    # has no special meaning and thus must not be escaped
-                    # for compatiblity. Looks like a defect in python's
-                    # re.escape at least in versions 3.7 <= v <= 3.13.7
+                elif ord(character) == 0x0023:  # the number sign
+                    # .. only has a special meaning when in re.VERBOSE mode.
+                    # So it is okay to leave it un-escaped.
+                    # This helps to be more compatible with other regular
+                    # expression engines, as for Javascript's unicode-aware
+                    # RegExp the number sign must not be quoted.
                     escaped_value = character
                 else:
                     escaped_value = re.escape(character)
