@@ -3,7 +3,6 @@
 import collections
 import enum
 import io
-import string
 from typing import (
     Mapping,
     Type,
@@ -16,8 +15,8 @@ from typing import (
 
 import abnf
 import regex as re
-from icontract import require, ensure
 import sortedcontainers
+from icontract import require, ensure
 
 import abnf_to_regexp.abnf_transformation
 import abnf_to_regexp.compression
@@ -34,7 +33,10 @@ from abnf_to_regexp.base import (
     Transformer,
     Visitor,
 )
-from abnf_to_regexp.representation import escape_for_character_class
+from abnf_to_regexp.representation import (
+    escape_for_character_class,
+    escape_literal,
+)
 
 # Short-circuit the rules from RFC 5234 to regular expressions
 _RFC_5234 = {
@@ -355,32 +357,7 @@ class _Representer(Visitor):
     _NO_NEED_TO_ESCAPE_RE = re.compile(r"[a-zA-Z_0-9\-]*")
 
     def visit_literal(self, element: Literal) -> None:
-        # ``re.escape`` is a bit too conservative and produces unreadable regular
-        # expressions. To make the expressions more readable, we avoid escaping
-        # the cases where we are sure no escapes are necessary.
-        if _Representer._NO_NEED_TO_ESCAPE_RE.fullmatch(element.value):
-            self.stream.write_text(element.value)
-        else:
-            # code also copied to single_regexp.convert_literal()
-            for character in element.value:
-                if character not in string.printable and ord(character) <= 255:
-                    escaped_value = f"\\x{ord(character):02x}"
-                elif 255 < ord(character) < 0x10000:
-                    escaped_value = f"\\u{ord(character):04x}"
-                elif 0x10000 <= ord(character) <= 0x10FFFF:
-                    escaped_value = f"\\U{ord(character):08x}"
-                elif ord(character) == 0x0023:  # the number sign
-                    # .. only has a special meaning when in re.VERBOSE mode.
-                    # So it is okay to leave it un-escaped.
-                    # This helps to be more compatible with other regular
-                    # expression engines, as for Javascript's unicode-aware
-                    # RegExp the number sign must not be quoted.
-                    escaped_value = character
-                else:
-                    escaped_value = re.escape(character)
-                # end of code copy
-                assert isinstance(escaped_value, str)
-                self.stream.write_text(escaped_value)
+        self.stream.write_text(escape_literal(element.value))
 
     def visit_range(self, element: Range) -> None:
         self.stream.write_text(
