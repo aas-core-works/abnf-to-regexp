@@ -87,7 +87,7 @@ def run(
 
         stderr.write(
             f"Parsing error at line {line}: {err}:\n\n"
-            f"{text[err.start:err.start + 200]!r};\n"
+            f"{text[err.start:err.start + 200]!r}"
         )
         return 1
 
