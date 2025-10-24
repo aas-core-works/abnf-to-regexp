@@ -361,6 +361,7 @@ class _Representer(Visitor):
         if _Representer._NO_NEED_TO_ESCAPE_RE.fullmatch(element.value):
             self.stream.write_text(element.value)
         else:
+            # code also copied to single_regexp.convert_literal()
             for character in element.value:
                 if character not in string.printable and ord(character) <= 255:
                     escaped_value = f"\\x{ord(character):02x}"
@@ -368,11 +369,17 @@ class _Representer(Visitor):
                     escaped_value = f"\\u{ord(character):04x}"
                 elif 0x10000 <= ord(character) <= 0x10FFFF:
                     escaped_value = f"\\U{ord(character):08x}"
+                elif ord(character) == 0x0023:  # the number sign
+                    # .. only has a special meaning when in re.VERBOSE mode.
+                    # So it is okay to leave it un-escaped.
+                    # This helps to be more compatible with other regular
+                    # expression engines, as for Javascript's unicode-aware
+                    # RegExp the number sign must not be quoted.
+                    escaped_value = character
                 else:
                     escaped_value = re.escape(character)
-
+                # end of code copy
                 assert isinstance(escaped_value, str)
-
                 self.stream.write_text(escaped_value)
 
     def visit_range(self, element: Range) -> None:

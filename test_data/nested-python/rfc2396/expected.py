@@ -46,4 +46,4 @@ upalpha = (
     '[lL]|[mM]|[nN]|[oO]|[pP]|[qQ]|[rR]|[sS]|[tT]|[uU]|[vV]|'
     '[wW]|[xX]|[yY]|[zZ])'
 )
-uri_reference = f'({absoluteuri}|{relativeuri})?(\\#{fragment})?'
+uri_reference = f'({absoluteuri}|{relativeuri})?(#{fragment})?'

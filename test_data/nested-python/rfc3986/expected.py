@@ -45,7 +45,7 @@ relative_part = (
     f'(//{authority}{path_abempty}|{path_absolute}|'
     f'{path_noscheme}|{path_empty})'
 )
-relative_ref = f'{relative_part}(\\?{query})?(\\#{fragment})?'
+relative_ref = f'{relative_part}(\\?{query})?(#{fragment})?'
 reserved = f'({gen_delims}|{sub_delims})'
-uri = f'{scheme}:{hier_part}(\\?{query})?(\\#{fragment})?'
+uri = f'{scheme}:{hier_part}(\\?{query})?(#{fragment})?'
 uri_reference = f'({uri}|{relative_ref})'
