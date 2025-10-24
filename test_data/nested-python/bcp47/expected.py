@@ -1,7 +1,7 @@
 alphanum = '[a-zA-Z0-9]'
 singleton = '[0-9A-WY-Za-wy-z]'
 extension = f'{singleton}(-({alphanum}){{2,8}})+'
-extlang = '[a-zA-Z]{3}(-[a-zA-Z]{3}){,2}'
+extlang = '[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2}'
 irregular = (
     '(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|'
     'i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|'
