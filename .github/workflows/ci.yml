@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@master
@@ -26,6 +26,9 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip3 install --upgrade coveralls
+          # Setuptools need to be installed separately as Python >3.12 does not include
+          # them.
+          pip3 install setuptools
           pip3 install -e .[dev]
 
       - name: Run checks
