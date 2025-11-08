@@ -14,7 +14,7 @@ class Step(enum.Enum):
     PYLINT = "pylint"
     TEST = "test"
     DOCTEST = "doctest"
-    CHECK_INIT_AND_SETUP_COINCIDE = "check-init-and-setup-coincide"
+    CHECK_VERSION_CONSISTENT = "check-version-consistent"
     CHECK_HELP_IN_README = "check-help-in-readme"
 
 
@@ -72,8 +72,7 @@ def main() -> int:
         black_targets = [
             "abnf_to_regexp",
             "precommit.py",
-            "setup.py",
-            "check_init_and_setup_coincide.py",
+            "check_version_consistent.py",
             "check_help_in_readme.py",
             "dev_scripts"
         ]
@@ -160,14 +159,18 @@ def main() -> int:
         print("Skipped doctesting.")
 
     if (
-        Step.CHECK_INIT_AND_SETUP_COINCIDE in selects
-        and Step.CHECK_INIT_AND_SETUP_COINCIDE not in skips
+        Step.CHECK_VERSION_CONSISTENT in selects
+        and Step.CHECK_VERSION_CONSISTENT not in skips
     ):
-        print("Checking that abnf_to_regexp/__init__.py and setup.py coincide...")
-        subprocess.check_call([sys.executable, "check_init_and_setup_coincide.py"])
+        print(
+            "Checking that the version is consistent between "
+            "abnf_to_regexp/__init__.py and pyproject.toml ..."
+        )
+        subprocess.check_call([sys.executable, "check_version_consistent.py"])
     else:
         print(
-            "Skipped checking that abnf_to_regexp/__init__.py and " "setup.py coincide."
+            "Skipped checking that the versions in abnf_to_regexp/__init__.py "
+            "and pyproject.toml coincide."
         )
 
     if Step.CHECK_HELP_IN_README in selects and Step.CHECK_HELP_IN_README not in skips:
