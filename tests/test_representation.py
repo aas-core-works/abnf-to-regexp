@@ -6,7 +6,9 @@ from abnf_to_regexp.representation import escape_for_character_class, escape_lit
 
 
 # noinspection PyPep8Naming
-class Test_escape_for_character_class(unittest.TestCase):  # pylint: disable=invalid-name
+class Test_escape_for_character_class(
+    unittest.TestCase
+):  # pylint: disable=invalid-name
     def test_empty_string(self) -> None:
         self.assertEqual("", escape_for_character_class(""))
 

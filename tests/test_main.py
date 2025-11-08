@@ -14,8 +14,8 @@ def represent_diff(expected_text: str, got_text: str) -> Optional[str]:
     """Generate a diff message with +-30 characters from the first difference."""
     width = max(len(expected_text), len(got_text))
 
-    expected_padded = expected_text.ljust(width, '\0')
-    got_padded = got_text.ljust(width, '\0')
+    expected_padded = expected_text.ljust(width, "\0")
+    got_padded = got_text.ljust(width, "\0")
 
     first_diff_index = -1
     for i, (expected, got) in enumerate(zip(expected_padded, got_padded)):
@@ -28,12 +28,12 @@ def represent_diff(expected_text: str, got_text: str) -> Optional[str]:
 
     result = io.StringIO()
 
-    result.write('Offset: expected vs got\n')
+    result.write("Offset: expected vs got\n")
     for i in range(max(0, first_diff_index - 30), min(width, first_diff_index + 30)):
-        expected = repr(expected_text[i]) if i < len(expected_text) else 'N/A'
-        got = repr(got_text[i]) if i < len(got_text) else 'N/A'
+        expected = repr(expected_text[i]) if i < len(expected_text) else "N/A"
+        got = repr(got_text[i]) if i < len(got_text) else "N/A"
 
-        result.write(f'{i + 1:4d}: {expected} vs {got}')
+        result.write(f"{i + 1:4d}: {expected} vs {got}")
 
         if i == first_diff_index:
             result.write(" <<< first difference here <<<")
@@ -61,10 +61,10 @@ class TestAgainstRecordings(unittest.TestCase):
                 params=abnf_to_regexp.main.Params(
                     input_path=grammar_pth,
                     output_path=None,
-                    fmt=abnf_to_regexp.main.Format.SINGLE_REGEXP
+                    fmt=abnf_to_regexp.main.Format.SINGLE_REGEXP,
                 ),
                 stdout=stdout,
-                stderr=stderr
+                stderr=stderr,
             )
 
             expected_err_pth = case_dir / "expected.err"
@@ -74,11 +74,11 @@ class TestAgainstRecordings(unittest.TestCase):
             record = False
 
             if record:
-                expected_err_pth.write_text(stderr.getvalue(), encoding='utf-8')
-                expected_out_pth.write_text(stdout.getvalue(), encoding='utf-8')
+                expected_err_pth.write_text(stderr.getvalue(), encoding="utf-8")
+                expected_out_pth.write_text(stdout.getvalue(), encoding="utf-8")
 
-            expected_err = expected_err_pth.read_text(encoding='utf-8')
-            expected_out = expected_out_pth.read_text(encoding='utf-8')
+            expected_err = expected_err_pth.read_text(encoding="utf-8")
+            expected_out = expected_out_pth.read_text(encoding="utf-8")
 
             diff = represent_diff(expected_err, stderr.getvalue())
             if diff:
@@ -86,13 +86,15 @@ class TestAgainstRecordings(unittest.TestCase):
                     f"Expected and obtained STDERR differ on {case_dir}. "
                     f"Expected error:\n{expected_err!r}\n\n"
                     f"Got error:\n{stderr.getvalue()!r}\n\n"
-                    f"The diff was:\n{diff}")
+                    f"The diff was:\n{diff}"
+                )
 
             diff = represent_diff(expected_out, stdout.getvalue())
             if diff:
                 raise AssertionError(
                     f"Expected and obtained STDOUT differ on {case_dir}. "
-                    f"The diff was:\n{diff}")
+                    f"The diff was:\n{diff}"
+                )
 
             if not stderr.getvalue():
                 abnf_re_str = stdout.getvalue().strip()
@@ -120,12 +122,14 @@ class TestAgainstRecordings(unittest.TestCase):
                     self.assertRegex(example, abnf_re)
 
                 for counter_example_pth in sorted(
-                        case_dir.glob("counter_example*.txt")):
+                    case_dir.glob("counter_example*.txt")
+                ):
                     counter_example = counter_example_pth.read_text()
                     self.assertIsNone(
                         abnf_re.match(counter_example),
                         f"Expected the counter-example not to match "
-                        f"for {grammar_pth}: {counter_example_pth}")
+                        f"for {grammar_pth}: {counter_example_pth}",
+                    )
 
     def test_python_nested(self) -> None:
         this_dir = pathlib.Path(os.path.realpath(__file__)).parent
@@ -144,10 +148,10 @@ class TestAgainstRecordings(unittest.TestCase):
                 params=abnf_to_regexp.main.Params(
                     input_path=grammar_pth,
                     output_path=None,
-                    fmt=abnf_to_regexp.main.Format.PYTHON_NESTED
+                    fmt=abnf_to_regexp.main.Format.PYTHON_NESTED,
                 ),
                 stdout=stdout,
-                stderr=stderr
+                stderr=stderr,
             )
 
             expected_err_pth = case_dir / "expected.err"
@@ -157,11 +161,11 @@ class TestAgainstRecordings(unittest.TestCase):
             record = False
 
             if record:
-                expected_err_pth.write_text(stderr.getvalue(), encoding='utf-8')
-                expected_out_pth.write_text(stdout.getvalue(), encoding='utf-8')
+                expected_err_pth.write_text(stderr.getvalue(), encoding="utf-8")
+                expected_out_pth.write_text(stdout.getvalue(), encoding="utf-8")
 
-            expected_err = expected_err_pth.read_text(encoding='utf-8')
-            expected_out = expected_out_pth.read_text(encoding='utf-8')
+            expected_err = expected_err_pth.read_text(encoding="utf-8")
+            expected_out = expected_out_pth.read_text(encoding="utf-8")
 
             diff = represent_diff(expected_err, stderr.getvalue())
             if diff:
@@ -169,23 +173,25 @@ class TestAgainstRecordings(unittest.TestCase):
                     f"Expected and obtained STDERR differ on {case_dir}. "
                     f"Expected error:\n{expected_err!r}\n\n"
                     f"Got error:\n{stderr.getvalue()!r}\n\n"
-                    f"The diff was:\n{diff}")
+                    f"The diff was:\n{diff}"
+                )
 
             diff = represent_diff(expected_out, stdout.getvalue())
             if diff:
                 raise AssertionError(
                     f"Expected and obtained STDOUT differ on {case_dir}. "
-                    f"The diff was:\n{diff}")
+                    f"The diff was:\n{diff}"
+                )
 
             if not stderr.getvalue():
                 code = stdout.getvalue().strip()
                 try:
-                    compile(code, "<abnf-to-regexp-test>", mode='exec')
+                    compile(code, "<abnf-to-regexp-test>", mode="exec")
                 except Exception as exception:
                     raise AssertionError(
-                        f"Failed to compile code as in {expected_out_pth}:\n"
-                        f"{code}"
+                        f"Failed to compile code as in {expected_out_pth}:\n" f"{code}"
                     ) from exception
+
 
 if __name__ == "__main__":
     unittest.main()

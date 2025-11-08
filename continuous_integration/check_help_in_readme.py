@@ -50,14 +50,14 @@ def parse_readme(lines: List[str]) -> Tuple[List[Block], List[str]]:
         mtch = HELP_STARTS_RE.match(lines[i])
         if mtch:
             command = mtch.group("command")
-            help_ends = ".. Help ends: {}".format(command)
+            help_ends = f".. Help ends: {command}"
             try:
                 end_index = lines.index(help_ends, i)
             except ValueError:
                 end_index = -1
 
             if end_index == -1:
-                return [], ["Could not find the end marker {!r}".format(help_ends)]
+                return [], [f"Could not find the end marker {help_ends!r}"]
 
             blocks.append(
                 Block(command=command, start_line_idx=i + 1, end_line_idx=end_index)
@@ -84,18 +84,18 @@ def capture_output_lines(command: str) -> List[str]:
             f"The python interpreter could not be found: {command_parts[0]}"
         )
 
-    proc = subprocess.Popen(
+    with subprocess.Popen(
         command_parts,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         encoding="utf-8",
-    )
-    output, err = proc.communicate()
-    if err:
-        raise RuntimeError(
-            f"The command {command!r} failed with exit code {proc.returncode} and "
-            f"stderr:\n{err}"
-        )
+    ) as proc:
+        output, err = proc.communicate()
+        if err:
+            raise RuntimeError(
+                f"The command {command!r} failed with exit code {proc.returncode} and "
+                f"stderr:\n{err}"
+            )
 
     return output.splitlines()
 
@@ -126,16 +126,16 @@ def diff(got_lines: List[str], expected_lines: List[str]) -> Optional[str]:
     result.append("Expected:")
     for i, line in enumerate(expected_lines):
         if i >= len(got_lines) or line != got_lines[i]:
-            print("DIFF: {:2d}: {!r}".format(i, line))
+            print(f"DIFF: {i:2d}: {line!r}")
         else:
-            print("OK  : {:2d}: {!r}".format(i, line))
+            print(f"OK  : {i:2d}: {line!r}")
 
     result.append("Got:")
     for i, line in enumerate(got_lines):
         if i >= len(expected_lines) or line != expected_lines[i]:
-            print("DIFF: {:2d}: {!r}".format(i, line))
+            print(f"DIFF: {i:2d}: {line!r}")
         else:
-            print("OK  : {:2d}: {!r}".format(i, line))
+            print(f"OK  : {i:2d}: {line!r}")
 
     return "\n".join(result)
 
@@ -152,19 +152,21 @@ def main() -> int:
     args = parser.parse_args()
     overwrite = bool(args.overwrite)
 
-    this_dir = pathlib.Path(os.path.realpath(__file__)).parent
-    pth = this_dir / "README.rst"
+    repo_root = pathlib.Path(os.path.realpath(__file__)).parent.parent
+    pth = repo_root / "README.rst"
 
     text = pth.read_text(encoding="utf-8")
     lines = text.splitlines()
 
     blocks, errors = parse_readme(lines=lines)
     if errors:
-        print("One or more errors in {}:".format(pth), file=sys.stderr)
+        print(f"One or more errors in {pth}:", file=sys.stderr)
         for error in errors:
             print(error, file=sys.stderr)
 
         return -1
+
+    assert blocks is not None
 
     if len(blocks) == 0:
         return 0
@@ -185,6 +187,7 @@ def main() -> int:
             result.extend(code_block_lines)
             previous_block = block
 
+        assert previous_block is not None
         result.extend(lines[previous_block.end_line_idx :])
         result.append("")  # new line at the end of file
 
@@ -198,9 +201,11 @@ def main() -> int:
             expected_lines = lines[block.start_line_idx : block.end_line_idx]
             expected_lines = [line.rstrip() for line in expected_lines]
 
-            error = diff(got_lines=code_block_lines, expected_lines=expected_lines)
-            if error:
-                print(error, file=sys.stderr)
+            maybe_error = diff(
+                got_lines=code_block_lines, expected_lines=expected_lines
+            )
+            if maybe_error:
+                print(maybe_error, file=sys.stderr)
                 return -1
 
     return 0
