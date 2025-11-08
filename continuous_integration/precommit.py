@@ -7,6 +7,8 @@ import pathlib
 import subprocess
 import sys
 
+# pylint: disable=missing-docstring
+
 
 class Step(enum.Enum):
     BLACK = "black"
@@ -60,21 +62,20 @@ def main() -> int:
     selects = (
         [Step(value) for value in args.select]
         if args.select is not None
-        else [value for value in Step]
+        else [value for value in Step]  # pylint: disable=unnecessary-comprehension
     )
     skips = [Step(value) for value in args.skip] if args.skip is not None else []
 
-    repo_root = pathlib.Path(__file__).parent
+    repo_root = pathlib.Path(__file__).parent.parent
 
     if Step.BLACK in selects and Step.BLACK not in skips:
         print("Black'ing...")
         # fmt: off
         black_targets = [
             "abnf_to_regexp",
-            "precommit.py",
-            "check_version_consistent.py",
-            "check_help_in_readme.py",
-            "dev_scripts"
+            "continuous_integration",
+            "dev_scripts",
+            "tests"
         ]
         # fmt: on
 
@@ -93,7 +94,12 @@ def main() -> int:
     if Step.MYPY in selects and Step.MYPY not in skips:
         print("Mypy'ing...")
         # fmt: off
-        mypy_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
+        mypy_targets = [
+            "abnf_to_regexp",
+            "tests",
+            "dev_scripts",
+            "continuous_integration"
+        ]
         subprocess.check_call(
             [
                 sys.executable,
@@ -108,13 +114,17 @@ def main() -> int:
     if Step.PYLINT in selects and Step.PYLINT not in skips:
         # fmt: off
         print("Pylint'ing...")
-        pylint_targets = ["abnf_to_regexp", "tests", "dev_scripts"]
+        pylint_targets = [
+            "abnf_to_regexp",
+            "tests",
+            "dev_scripts",
+            "continuous_integration"
+        ]
         subprocess.check_call(
             [
                 sys.executable,
                 "-m",
-                "pylint",
-                "--rcfile=pylint.rc"
+                "pylint"
             ] + pylint_targets, cwd=str(repo_root)
         )
         # fmt: on
@@ -166,7 +176,9 @@ def main() -> int:
             "Checking that the version is consistent between "
             "abnf_to_regexp/__init__.py and pyproject.toml ..."
         )
-        subprocess.check_call([sys.executable, "check_version_consistent.py"])
+        subprocess.check_call(
+            [sys.executable, "continuous_integration/check_version_consistent.py"]
+        )
     else:
         print(
             "Skipped checking that the versions in abnf_to_regexp/__init__.py "
@@ -175,7 +187,7 @@ def main() -> int:
 
     if Step.CHECK_HELP_IN_README in selects and Step.CHECK_HELP_IN_README not in skips:
         if sys.version_info < (3, 10):
-            cmd = [sys.executable, "check_help_in_readme.py"]
+            cmd = [sys.executable, "continuous_integration/check_help_in_readme.py"]
             if overwrite:
                 cmd.append("--overwrite")
 

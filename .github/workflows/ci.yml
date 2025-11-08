@@ -33,7 +33,7 @@ jobs:
 
       - name: Run checks
         run: |
-          python3 precommit.py
+          python3 continuous_integration/precommit.py
 
       - name: Upload Coverage
         run: coveralls --service=github

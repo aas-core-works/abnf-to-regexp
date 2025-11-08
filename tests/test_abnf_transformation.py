@@ -43,10 +43,8 @@ class TestLetterRanges(unittest.TestCase):
         )
 
     def test_misses_between_ranges(self) -> None:
-        for (_, end1), (start2, _) in (
-                abnf_to_regexp.abnf_transformation.pairwise(
-                    abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
-                )
+        for (_, end1), (start2, _) in abnf_to_regexp.abnf_transformation.pairwise(
+            abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
         ):
             if start2 - end1 <= 2:
                 continue
@@ -58,15 +56,15 @@ class TestLetterRanges(unittest.TestCase):
             )
 
     def test_hits_with_start_and_end_between_ranges(self) -> None:
-        for (start1, end1), (start2, end2) in (
-                abnf_to_regexp.abnf_transformation.pairwise(
-                    abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
-                )
+        for (start1, end1), (
+            start2,
+            end2,
+        ) in abnf_to_regexp.abnf_transformation.pairwise(
+            abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
         ):
             self.assertTrue(
                 abnf_to_regexp.abnf_transformation._range_overlaps_with_a_letter_range(
-                    start_ord=min(start1 + 1, end1),
-                    end_ord=min(start2 + 1, end2)
+                    start_ord=min(start1 + 1, end1), end_ord=min(start2 + 1, end2)
                 )
             )
 
@@ -74,23 +72,19 @@ class TestLetterRanges(unittest.TestCase):
         for start, end in abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES:
             self.assertTrue(
                 abnf_to_regexp.abnf_transformation._range_overlaps_with_a_letter_range(
-                    start_ord=start,
-                    end_ord=start
+                    start_ord=start, end_ord=start
                 )
             )
 
             self.assertTrue(
                 abnf_to_regexp.abnf_transformation._range_overlaps_with_a_letter_range(
-                    start_ord=end,
-                    end_ord=end
+                    start_ord=end, end_ord=end
                 )
             )
 
     def test_misses_between_ranges_with_point_range(self) -> None:
-        for (_, end1), (start2, _) in (
-                abnf_to_regexp.abnf_transformation.pairwise(
-                    abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
-                )
+        for (_, end1), (start2, _) in abnf_to_regexp.abnf_transformation.pairwise(
+            abnf_to_regexp.abnf_transformation._LETTER_ORD_RANGES
         ):
             if start2 - end1 <= 1:
                 continue
@@ -104,8 +98,7 @@ class TestLetterRanges(unittest.TestCase):
     def test_with_explicit_case(self) -> None:
         self.assertTrue(
             abnf_to_regexp.abnf_transformation._range_overlaps_with_a_letter_range(
-                start_ord=ord('b'),
-                end_ord=ord('d')
+                start_ord=ord("b"), end_ord=ord("d")
             )
         )
 

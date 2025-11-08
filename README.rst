@@ -100,7 +100,7 @@ Development
 
 .. code-block:: bash
 
-    python precommit.py
+    python continuous_integration/precommit.py
 
 Versioning
 ==========

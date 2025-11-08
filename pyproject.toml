@@ -55,3 +55,40 @@ abnf_to_regexp = ["py.typed"]
 
 [tool.setuptools.exclude-package-data]
 "*" = ["tests*"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint."messages control"]
+disable = [
+    "too-few-public-methods",
+    "len-as-condition",
+    "duplicate-code",
+    "no-else-raise",
+    "no-else-return",
+    "too-many-locals",
+    "too-many-branches",
+    "too-many-nested-blocks",
+    "too-many-return-statements",
+    "unsubscriptable-object",
+    "not-an-iterable",
+    "broad-except",
+    "too-many-statements",
+    "protected-access",
+    "unnecessary-pass",
+    "use-dict-literal",
+]
+
+[tool.mypy]
+
+[[tool.mypy.overrides]]
+module = "abnf"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "regex"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "sortedcontainers"
+ignore_missing_imports = true
