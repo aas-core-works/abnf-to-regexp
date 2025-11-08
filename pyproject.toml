@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abnf-to-regexp"
+version = "1.1.3"
+description = "Convert ABNF grammars to Python regular expressions."
+readme = "README.rst"
+license = {text = "MIT"}
+authors = [
+    {name = "Marko Ristin", email = "marko@ristin.ch"}
+]
+keywords = ["abnf", "backus-naur", "convert", "regular", "expressions"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "icontract>=2.5.1,<3",
+    "regex==2021.4.4",
+    "abnf>=2.0,<2.3.0",
+    "sortedcontainers>=2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==24.3.0",
+    "mypy==1.18.2",
+    "pylint==3.3.9; python_version>='3.9' and python_version<'3.12'",
+    "pylint==4.0.2; python_version>='3.12'",
+    "pydocstyle>=2.1.1,<3",
+    "coverage>=7,<8",
+    "docutils>=0.14,<1",
+    "pygments>=2,<3",
+]
+
+[project.scripts]
+abnf-to-regexp = "abnf_to_regexp.main:main"
+
+[project.urls]
+Homepage = "https://github.com/aas-core-works/abnf-to-regexp"
+
+[tool.setuptools]
+packages = ["abnf_to_regexp"]
+
+[tool.setuptools.package-data]
+abnf_to_regexp = ["py.typed"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["tests*"]
