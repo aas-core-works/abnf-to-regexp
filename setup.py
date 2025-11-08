@@ -44,7 +44,8 @@ setup(
         "dev": [
             "black==24.3.0",
             "mypy==1.18.2",
-            "pylint==2.3.1",
+            'pylint==3.3.9;python_version>="3.9" and python_version<"3.12"',
+            'pylint==4.0.2;python_version>="3.12"',
             "pydocstyle>=2.1.1,<3",
             "coverage>=7,<8",
             "docutils>=0.14,<1",

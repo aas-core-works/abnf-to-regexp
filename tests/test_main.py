@@ -1,5 +1,4 @@
 # pylint: disable=missing-docstring
-# pylint: disable=no-self-use
 
 import io
 import os
@@ -113,7 +112,8 @@ class TestAgainstRecordings(unittest.TestCase):
                         f"{line[err.colno - 30:err.colno - 1]}\n"
                         f"{line[err.colno - 1]}\n"
                         f"{line[err.colno:err.colno + 30]}\n"
-                        f"The whole regular exception is:\n{abnf_re_str!r}")
+                        f"The whole regular exception is:\n{abnf_re_str!r}"
+                    ) from err
 
                 for example_pth in sorted(case_dir.glob("example*.txt")):
                     example = example_pth.read_text()
@@ -181,11 +181,11 @@ class TestAgainstRecordings(unittest.TestCase):
                 code = stdout.getvalue().strip()
                 try:
                     compile(code, "<abnf-to-regexp-test>", mode='exec')
-                except Exception:
+                except Exception as exception:
                     raise AssertionError(
                         f"Failed to compile code as in {expected_out_pth}:\n"
                         f"{code}"
-                    )
+                    ) from exception
 
 if __name__ == "__main__":
     unittest.main()
