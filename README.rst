@@ -2,9 +2,9 @@
 abnf-to-regexp
 **************
 
-.. image:: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/check-on-push-to-main.yml/badge.svg
-    :target: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/check-on-push-to-main.yml
-    :alt: Check on push to main
+.. image:: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/aas-core-works/abnf-to-regexp/actions/workflows/ci.yml
+    :alt: Continuous integration
 
 .. image:: https://coveralls.io/repos/github/aas-core-works/abnf-to-regexp/badge.svg?branch=main
     :target: https://coveralls.io/github/aas-core-works/abnf-to-regexp?branch=main
