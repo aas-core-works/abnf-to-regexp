@@ -7,6 +7,19 @@ CHANGELOG
     Please keep this file at 72 line width so that we can copy-paste
     the release logs directly into commit messages.
 
+1.2.0 (2025-11-08)
+==================
+* Support Python 3.12 and 3.13 (#55)
+* Improve regexp generation for ``#`` (#50)
+* Remove spurious CRLF warning (#48)
+* Improve python-nested regex output for repetition (#45)
+* Fix default for format argument (#42)
+* Constrain abnf dependency to 2.2.0 (#43)
+
+This is a minor version which mainly improves on the compatibility of
+generated regular expressions so that they can be (re-)used across
+more platforms.
+
 1.1.3 (2024-03-22)
 ==================
 * Fix for the case no min. and only max. repetition (#34)
