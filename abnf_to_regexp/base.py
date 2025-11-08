@@ -98,7 +98,7 @@ class Reference(Element):
 class Transformer:
     """Transform recursively a regular expression."""
 
-    # pylint: disable=missing-docstring,no-self-use
+    # pylint: disable=missing-docstring
 
     def transform(self, element: Element) -> Element:
         if isinstance(element, Concatenation):
@@ -166,7 +166,7 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 class Convertor(Generic[T]):
     """Convert recursively a regular expression to something else."""
 
-    # pylint: disable=missing-docstring,no-self-use
+    # pylint: disable=missing-docstring
 
     def visit(self, element: Element) -> T:
         if isinstance(element, Concatenation):
@@ -219,7 +219,7 @@ class Convertor(Generic[T]):
 class Visitor:
     """Visit recursively a regular expression."""
 
-    # pylint: disable=missing-docstring,no-self-use
+    # pylint: disable=missing-docstring
 
     def visit(self, element: Element) -> None:
         if isinstance(element, Concatenation):

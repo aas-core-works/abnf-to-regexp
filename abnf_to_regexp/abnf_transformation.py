@@ -808,7 +808,7 @@ def _range_overlaps_with_a_letter_range(start_ord: int, end_ord: int) -> bool:
 class TransformerToElement(Transformer[Element], abc.ABC):
     """Transform an ABNF to a regular expression."""
 
-    # pylint: disable=missing-docstring,no-self-use
+    # pylint: disable=missing-docstring
 
     def transform_option(self, option: abnf.parser.Option) -> Element:
         return Repetition(
